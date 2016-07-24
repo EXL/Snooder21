@@ -1,4 +1,4 @@
-package ru.exlmoto.canvasexample;
+package ru.exlmoto.snood21;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

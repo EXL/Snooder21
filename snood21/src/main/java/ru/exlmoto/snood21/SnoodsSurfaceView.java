@@ -1,4 +1,4 @@
-package ru.exlmoto.canvasexample;
+package ru.exlmoto.snood21;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,7 +9,7 @@ import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class CanvasExampleView extends SurfaceView
+public class SnoodsSurfaceView extends SurfaceView
         implements SurfaceHolder.Callback, Runnable {
 
     public static final int ORIGINAL_WIDTH = 800;
@@ -37,7 +37,7 @@ public class CanvasExampleView extends SurfaceView
 
     private SurfaceHolder mSurfaceHolder = null;
 
-    public CanvasExampleView(Context context) {
+    public SnoodsSurfaceView(Context context) {
         super(context);
 
         mGameBitmap = Bitmap.createBitmap(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, Bitmap.Config.ARGB_8888);
@@ -103,7 +103,7 @@ public class CanvasExampleView extends SurfaceView
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        CanvasExampleActivity.toDebug("Surface created.");
+        SnoodsActivity.toDebug("Surface created.");
         mScreenWidth = holder.getSurfaceFrame().width();
         mScreenHeight = holder.getSurfaceFrame().height();
 
@@ -114,7 +114,7 @@ public class CanvasExampleView extends SurfaceView
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        CanvasExampleActivity.toDebug("Surface changed: " +
+        SnoodsActivity.toDebug("Surface changed: " +
                 width + "x" + height + " | " +
                 mScreenWidth + "x" + mScreenHeight + ".");
     }
@@ -130,7 +130,7 @@ public class CanvasExampleView extends SurfaceView
                 }
                 shutdown = true;
             } catch (InterruptedException e) {
-                CanvasExampleActivity.toDebug("Error joining to Main Thread");
+                SnoodsActivity.toDebug("Error joining to Main Thread");
             }
         }
     }

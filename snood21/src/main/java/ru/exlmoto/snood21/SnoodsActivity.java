@@ -1,4 +1,4 @@
-package ru.exlmoto.canvasexample;
+package ru.exlmoto.snood21;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -6,11 +6,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
 
-public class CanvasExampleActivity extends Activity {
+public class SnoodsActivity extends Activity {
 
-    public static final String APP_DEBUG_TAG = "StackAttack";
+    public static final String APP_DEBUG_TAG = "Snood21";
 
-    CanvasExampleView mCanvasExampleView = null;
+    SnoodsSurfaceView mSnoodsSurfaceView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +18,8 @@ public class CanvasExampleActivity extends Activity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        mCanvasExampleView = new CanvasExampleView(this);
-        setContentView(mCanvasExampleView);
+        mSnoodsSurfaceView = new SnoodsSurfaceView(this);
+        setContentView(mSnoodsSurfaceView);
     }
 
     public static void toDebug(String message) {
@@ -28,8 +28,8 @@ public class CanvasExampleActivity extends Activity {
 
     private int[] convertCoords(float x, float y) {
         int[] coords = new int[2];
-        coords[0] = Math.round(x * CanvasExampleView.ORIGINAL_WIDTH / mCanvasExampleView.getmScreenWidth());
-        coords[1] = Math.round(y * CanvasExampleView.ORIGINAL_HEIGHT / mCanvasExampleView.getmScreenHeight());
+        coords[0] = Math.round(x * SnoodsSurfaceView.ORIGINAL_WIDTH / mSnoodsSurfaceView.getmScreenWidth());
+        coords[1] = Math.round(y * SnoodsSurfaceView.ORIGINAL_HEIGHT / mSnoodsSurfaceView.getmScreenHeight());
         return coords;
     }
 
@@ -39,11 +39,11 @@ public class CanvasExampleActivity extends Activity {
         int[] coords = convertCoords(event.getX(), event.getY());
         switch (actionMasked) {
             case MotionEvent.ACTION_DOWN: {
-                mCanvasExampleView.setCoords(coords[0], coords[1]);
+                mSnoodsSurfaceView.setCoords(coords[0], coords[1]);
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-                mCanvasExampleView.setCoords(coords[0], coords[1]);
+                mSnoodsSurfaceView.setCoords(coords[0], coords[1]);
                 break;
             }
         }
