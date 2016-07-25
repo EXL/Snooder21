@@ -91,6 +91,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private CountDownTimer timer = null;
     private int secs = 0;
 
+    public boolean mIsDropingColumn = false;
+
     public SnoodsSurfaceView(Context context) {
         super(context);
 
@@ -125,7 +127,7 @@ public class SnoodsSurfaceView extends SurfaceView
             columnOffsets[i] = 0;
         }
 
-        timer = new CountDownTimer(10000, 1000) {
+        timer = new CountDownTimer(20000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 secs = (int) millisUntilFinished / 1000;
@@ -387,8 +389,12 @@ public class SnoodsSurfaceView extends SurfaceView
     }
 
     private void dropColumn(int column) {
+        mIsDropingColumn = true;
+        highlightColumn = 0;
         columnOffsets[column] += DROP_COLUMN_SPEED;
         if (columnOffsets[column] > mScreenHeight) {
+            mIsDropingColumn = false;
+            SnoodsActivity.toDebug("This is: " + columnOffsets[column]);
             columnsDecks[column].clear();
             columnOffsets[column] = 0;
         }
@@ -435,6 +441,7 @@ public class SnoodsSurfaceView extends SurfaceView
     private void resetGame() {
         mDeckIsEmpty = false;
         mIsDropingCard = false;
+        mIsGrab = false;
         cardIndex = 20;
         timer.start();
         mX_card_coord = initialCardCoordX;

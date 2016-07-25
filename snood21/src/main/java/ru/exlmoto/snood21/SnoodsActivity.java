@@ -43,7 +43,7 @@ public class SnoodsActivity extends Activity {
         int y = convertY(event.getRawY()) - win_coords[1];
         int x_c = x - SnoodsSurfaceView.mX_card_conv_coord;
         int y_c = y - SnoodsSurfaceView.mY_card_conv_coord;
-        if (!mSnoodsSurfaceView.mIsDropingCard && !mSnoodsSurfaceView.mDeckIsEmpty) {
+        if (!mSnoodsSurfaceView.mIsDropingCard && !mSnoodsSurfaceView.mDeckIsEmpty && !mSnoodsSurfaceView.mIsDropingColumn) {
             switch (actionMasked) {
                 case MotionEvent.ACTION_DOWN: {
                     mSnoodsSurfaceView.touchInDeckRect(x, y);
