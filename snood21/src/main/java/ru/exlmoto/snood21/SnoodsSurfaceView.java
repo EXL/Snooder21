@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.CountDownTimer;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -18,6 +19,8 @@ public class SnoodsSurfaceView extends SurfaceView
 
     public static final int ORIGINAL_WIDTH = 800;
     public static final int ORIGINAL_HEIGHT = 480;
+
+    public static final int DIGITS_NUM = 11;
 
     public static final int DROP_CARD_SPEED = 15;
     public static final int DROP_COLUMN_SPEED = 10;
@@ -56,6 +59,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private Bitmap mScoreLabelBitmap = null;
     private Bitmap mDigitsBitmap = null;
 
+    private Bitmap[] mDigits = null;
+
     private Rect cardRect = null;
     private Rect[] columnRects = null;
     private int highlightColumn = 0;
@@ -74,6 +79,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private ArrayList<Bitmap>[] columnsDecks = null;
     private int cardIndex = 20;
+    private int scores = 0;
 
     private Rect deckRect = null;
 
@@ -81,6 +87,9 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private int columnStartHeight = 111;
     private int[] columnOffsets = null;
+
+    private CountDownTimer timer = null;
+    private int secs = 0;
 
     public SnoodsSurfaceView(Context context) {
         super(context);
@@ -99,7 +108,9 @@ public class SnoodsSurfaceView extends SurfaceView
 
         mBackGroundBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bkg_moto);
         mScoreLabelBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.score_moto);
-//        mCurrentCardBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto);
+        mDigitsBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.digits_moto);
+        mDigits = new Bitmap[DIGITS_NUM];
+        fillDigitsBitmap();
 
         columnRects = new Rect[4];
         cardBitmaps = new Bitmap[3];
@@ -114,6 +125,19 @@ public class SnoodsSurfaceView extends SurfaceView
             columnOffsets[i] = 0;
         }
 
+        timer = new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                secs = (int) millisUntilFinished / 1000;
+            }
+
+            @Override
+            public void onFinish() {
+                secs = 0;
+                mDeckIsEmpty = true;
+            }
+        }.start();
+
         // Set screen always on
         setKeepScreenOn(true);
 
@@ -121,6 +145,51 @@ public class SnoodsSurfaceView extends SurfaceView
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
+    }
+
+    private void fillDigitsBitmap() {
+        for (int i = 0; i < DIGITS_NUM; ++i) {
+            int x_off = i * 29;
+            SnoodsActivity.toDebug("" + x_off + " " + mDigitsBitmap.getWidth() + " " + mDigitsBitmap.getHeight());
+            mDigits[i] = Bitmap.createBitmap(mDigitsBitmap, x_off, 0, 29, 52);
+        }
+    }
+
+    private void paintNumber(Canvas canvas, Paint paint, int number, int x, int y, boolean centered, boolean time) {
+        if (!time) {
+            String num = "" + number;
+            int len = num.length();
+
+            for (int i = 0; i < len; ++i) {
+                if (!centered) {
+                    canvas.drawBitmap(mDigits[Character.getNumericValue(num.charAt(i))], x + i * 29, y, paint);
+                } else {
+                    canvas.drawBitmap(mDigits[Character.getNumericValue(num.charAt(i))], x - (len - 1) * 29 / 2 + i * 29, y, paint);
+                }
+            }
+        } else {
+            int minutes = secs / 60;
+            int secondes = secs % 60;
+
+            String timeS = "";
+            if (minutes < 10) {
+                timeS += 0;
+            }
+            timeS += minutes;
+            if (secondes < 10) {
+                timeS += 0;
+            }
+            timeS += secondes;
+            int len = timeS.length();
+            int r = 0;
+            for (int i = 0; i < len; ++i) {
+                canvas.drawBitmap(mDigits[Character.getNumericValue(timeS.charAt(i))], x + r + i * 29, y, paint);
+                if (i == 1) {
+                    r += 29;
+                    canvas.drawBitmap(mDigits[10], x + r + i * 29, y, paint);
+                }
+            }
+        }
     }
 
     private void flushDeck() {
@@ -165,6 +234,21 @@ public class SnoodsSurfaceView extends SurfaceView
 
             // Draw score label
             mBitmapCanvas.drawBitmap(mScoreLabelBitmap, 419, 2, mMainPaint);
+
+            // Draw scores
+            paintNumber(mBitmapCanvas, mMainPaint, scores, 600, 6, false, false);
+
+            // Draw Column scores
+            paintNumber(mBitmapCanvas, mMainPaint, scores, 227, 62, true, false);
+            paintNumber(mBitmapCanvas, mMainPaint, scores, 386, 62, true, false);
+            paintNumber(mBitmapCanvas, mMainPaint, scores, 544, 62, true, false);
+            paintNumber(mBitmapCanvas, mMainPaint, scores, 703, 62, true, false);
+
+            // Draw cards count
+            paintNumber(mBitmapCanvas, mMainPaint, cardIndex, 20, 288, false, false);
+
+            // Draw time
+            paintNumber(mBitmapCanvas, mMainPaint, secs, 124, 4, false, true);
 
             // Draw card decks
             drawCardDecs(mBitmapCanvas, mMainPaint);
@@ -216,8 +300,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
         flushDeck();
 
-        mCurrentCardBitmap = cardBitmaps[mDeck[20 - 1]];
-        mNextCardBitmap = cardBitmaps[mDeck[20 - 2]];
+        resetDeckCards();
     }
 
     public void touchInDeckRect(int x, int y) {
@@ -275,6 +358,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 addCardToColumn();
                 switchToNextCard();
             }
+            scores++;
             mIsDropingCard = false;
             mIsGrab = false;
             highlightColumn = 0;
@@ -350,8 +434,19 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void resetGame() {
         mDeckIsEmpty = false;
+        mIsDropingCard = false;
         cardIndex = 20;
+        timer.start();
+        mX_card_coord = initialCardCoordX;
+        mY_card_coord = initialCardCoordY;
+        highlightColumn = 0;
         flushDeck();
+        resetDeckCards();
+    }
+
+    private void resetDeckCards() {
+        mCurrentCardBitmap = cardBitmaps[mDeck[20 - 1]];
+        mNextCardBitmap = cardBitmaps[mDeck[20 - 2]];
     }
 
     private void start() {
