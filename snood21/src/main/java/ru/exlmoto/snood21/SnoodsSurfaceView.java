@@ -92,6 +92,7 @@ public class SnoodsSurfaceView extends SurfaceView
     private int secs = 0;
 
     public boolean mIsDropingColumn = false;
+    public boolean[] lockColumns = new boolean[4];
 
     public SnoodsSurfaceView(Context context) {
         super(context);
@@ -122,9 +123,11 @@ public class SnoodsSurfaceView extends SurfaceView
 
         columnsDecks = new ArrayList[4];
         columnOffsets = new int[4];
+        lockColumns = new boolean[4];
         for (int i = 0; i < 4; ++i) {
             columnsDecks[i] = new ArrayList<Bitmap>();
             columnOffsets[i] = 0;
+            lockColumns[i] = false;
         }
 
         timer = new CountDownTimer(20000, 1000) {
@@ -223,7 +226,11 @@ public class SnoodsSurfaceView extends SurfaceView
         if (column == 0) {
             return;
         } else {
-            paint.setColor(Color.parseColor("#7733AF54"));
+            if (lockColumns[column - 1]) {
+                paint.setColor(Color.parseColor("#77CF5B56"));
+            } else {
+                paint.setColor(Color.parseColor("#7733AF54"));
+            }
             canvas.drawRect(columnRects[column - 1], paint);
             paint.reset();
         }
@@ -317,7 +324,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void dropCard() {
         int x_to, y_to;
-        if (highlightColumn == 0) {
+        if (highlightColumn == 0 || lockColumns[highlightColumn - 1]) {
             x_to = initialCardCoordX;
             y_to = initialCardCoordY;
         } else {
@@ -356,11 +363,11 @@ public class SnoodsSurfaceView extends SurfaceView
         setCardCoords(mX_coord_from, mY_coord_from);
 
         if (x_to == mX_coord_from && y_to == mY_coord_from) {
-            if (highlightColumn != 0) {
+            if (highlightColumn != 0 && !lockColumns[highlightColumn - 1]) {
+                scores++;
                 addCardToColumn();
                 switchToNextCard();
             }
-            scores++;
             mIsDropingCard = false;
             mIsGrab = false;
             highlightColumn = 0;
@@ -418,16 +425,29 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
+    private void lockColumn(int column) {
+        for (int i = 0; i < columnsDecks[column].size(); ++i) {
+            columnsDecks[column].set(i, cardBitmaps[0]);
+        }
+        lockColumns[column] = true;
+    }
+
     private void tick() {
         if (mIsDropingCard) {
             dropCard();
         }
 
         for (int i = 0; i < 4; ++i) {
-            if (columnsDecks[i].size() == 10) {
-                dropColumn(i);
+            if (columnsDecks[i].size() == 5) {
+                lockColumn(i);
             }
         }
+
+//        for (int i = 0; i < 4; ++i) {
+//            if (columnsDecks[i].size() == 10) {
+//                dropColumn(i);
+//            }
+//        }
 
         if (mDeckIsEmpty) {
             dropAllColumns();
@@ -447,6 +467,9 @@ public class SnoodsSurfaceView extends SurfaceView
         mX_card_coord = initialCardCoordX;
         mY_card_coord = initialCardCoordY;
         highlightColumn = 0;
+        for (int i = 0; i < 4; ++i) {
+            lockColumns[i] = false;
+        }
         flushDeck();
         resetDeckCards();
     }
