@@ -26,25 +26,46 @@ public class SnoodsActivity extends Activity {
         Log.d(APP_DEBUG_TAG, message);
     }
 
-    private int[] convertCoords(float x, float y) {
-        int[] coords = new int[2];
-        coords[0] = Math.round(x * SnoodsSurfaceView.ORIGINAL_WIDTH / mSnoodsSurfaceView.getmScreenWidth());
-        coords[1] = Math.round(y * SnoodsSurfaceView.ORIGINAL_HEIGHT / mSnoodsSurfaceView.getmScreenHeight());
-        return coords;
+    public static int convertX(float x) {
+        return Math.round(x * SnoodsSurfaceView.ORIGINAL_WIDTH / SnoodsSurfaceView.getmScreenWidth());
+    }
+
+    public static int convertY(float y) {
+        return Math.round(y * SnoodsSurfaceView.ORIGINAL_HEIGHT / SnoodsSurfaceView.getmScreenHeight());
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        int[] win_coords = new int[2];
+        mSnoodsSurfaceView.getLocationInWindow(win_coords);
         int actionMasked = event.getActionMasked();
-        int[] coords = convertCoords(event.getX(), event.getY());
-        switch (actionMasked) {
-            case MotionEvent.ACTION_DOWN: {
-                mSnoodsSurfaceView.setCoords(coords[0], coords[1]);
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                mSnoodsSurfaceView.setCoords(coords[0], coords[1]);
-                break;
+        int x = convertX(event.getRawX()) - win_coords[0];
+        int y = convertY(event.getRawY()) - win_coords[1];
+        int x_c = x - SnoodsSurfaceView.mX_card_conv_coord;
+        int y_c = y - SnoodsSurfaceView.mY_card_conv_coord;
+        if (!mSnoodsSurfaceView.mIsDropingCard && !mSnoodsSurfaceView.mDeckIsEmpty) {
+            switch (actionMasked) {
+                case MotionEvent.ACTION_DOWN: {
+                    mSnoodsSurfaceView.touchInDeckRect(x, y);
+                    if (mSnoodsSurfaceView.mIsGrab) {
+                        mSnoodsSurfaceView.setCardCoords(x_c, y_c);
+                    }
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    if (mSnoodsSurfaceView.mIsGrab) {
+                        mSnoodsSurfaceView.setCardCoords(x_c, y_c);
+                        mSnoodsSurfaceView.setHighlightColumn(mSnoodsSurfaceView.detectColumn(x, y));
+                    }
+                    break;
+                }
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL: {
+                    if (mSnoodsSurfaceView.mIsGrab) {
+                        mSnoodsSurfaceView.putCardToColumn(x_c, y_c);
+                    }
+                    break;
+                }
             }
         }
         return super.onTouchEvent(event);
