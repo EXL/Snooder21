@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.os.CountDownTimer;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -20,13 +21,14 @@ public class SnoodsSurfaceView extends SurfaceView
     public static final int ORIGINAL_WIDTH = 800;
     public static final int ORIGINAL_HEIGHT = 480;
 
+    private static final int BITMAPS_COUNT = 15;
+    private static final int COLUMNS_COUNT = 4;
+
     public static final int DIGITS_NUM = 11;
 
     public static final int DROP_CARD_SPEED = 15;
     public static final int DROP_COLUMN_SPEED = 10;
     public static final int CARD_GAP = 30;
-
-    public static final String PAINT_TEXT = "Canvas Example";
 
     private Rect mOriginalScreenRect = null;
     private Rect mOutputScreenRect = null;
@@ -38,8 +40,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private final int initialCardCoordY = 85;
     private int mX_card_coord = initialCardCoordX;
     private int mY_card_coord = initialCardCoordY;
-    public static int mX_card_conv_coord = 0;
-    public static int mY_card_conv_coord = 0;
+    public static int mX_card_grab_coord = 0;
+    public static int mY_card_grab_coord = 0;
 
     private boolean mIsRunning = false;
 
@@ -78,7 +80,7 @@ public class SnoodsSurfaceView extends SurfaceView
     private Bitmap mNextCardBitmap = null;
 
     private ArrayList<Bitmap>[] columnsDecks = null;
-    private int cardIndex = 20;
+    private int cardIndex = 32; // First level
     private int scores = 0;
 
     private Rect deckRect = null;
@@ -92,11 +94,21 @@ public class SnoodsSurfaceView extends SurfaceView
     private int secs = 0;
 
     public boolean mIsDropingColumn = false;
-    public boolean[] lockColumns = new boolean[4];
+    public boolean[] lockColumns = null;
+    private int[] columnScores = null;
 
-    public SnoodsSurfaceView(Context context) {
+    public boolean mIsGameOver = false;
+    public boolean mIsLastLevel = false;
+
+    private SnoodsActivity snoodsActivity = null;
+    private boolean toastShown = false;
+
+    private float progressBarPercent = 0;
+
+    public SnoodsSurfaceView(Context context, final SnoodsActivity snoodsActivity) {
         super(context);
 
+        this.snoodsActivity = snoodsActivity;
         mContext = context;
 
         mRandom = new Random();
@@ -115,31 +127,65 @@ public class SnoodsSurfaceView extends SurfaceView
         mDigits = new Bitmap[DIGITS_NUM];
         fillDigitsBitmap();
 
-        columnRects = new Rect[4];
-        cardBitmaps = new Bitmap[3];
-        cardBitmaps[0] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto);
-        cardBitmaps[1] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto2);
-        cardBitmaps[2] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto3);
+        columnRects = new Rect[COLUMNS_COUNT];
+        cardBitmaps = new Bitmap[BITMAPS_COUNT];
 
-        columnsDecks = new ArrayList[4];
-        columnOffsets = new int[4];
-        lockColumns = new boolean[4];
-        for (int i = 0; i < 4; ++i) {
+        /* function generateNames() {
+        var size = 15;
+            for (var i = 0; i < size; ++i) {
+                console.log('cardBitmaps[' + i +
+                '] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto' + i +
+                ');');
+            }
+        } */
+
+        cardBitmaps[0] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto0);
+        cardBitmaps[1] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto1);
+        cardBitmaps[2] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto2);
+        cardBitmaps[3] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto3);
+        cardBitmaps[4] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto4);
+        cardBitmaps[5] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto5);
+        cardBitmaps[6] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto6);
+        cardBitmaps[7] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto7);
+        cardBitmaps[8] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto8);
+        cardBitmaps[9] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto9);
+        cardBitmaps[10] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto10);
+        cardBitmaps[11] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto11);
+        cardBitmaps[12] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto12);
+        cardBitmaps[13] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto13);
+        cardBitmaps[14] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto14);
+
+        columnsDecks = new ArrayList[COLUMNS_COUNT];
+        columnOffsets = new int[COLUMNS_COUNT];
+        lockColumns = new boolean[COLUMNS_COUNT];
+        columnScores = new int[COLUMNS_COUNT];
+        for (int i = 0; i < COLUMNS_COUNT; ++i) {
             columnsDecks[i] = new ArrayList<Bitmap>();
             columnOffsets[i] = 0;
+            columnScores[i] = 0;
             lockColumns[i] = false;
         }
 
-        timer = new CountDownTimer(20000, 1000) {
+        // TODO: refactor overload
+        timer = new CountDownTimer(60000 * 3, 1000) { // 3 min
+
+            private float dec = 400 / 180;
+
             @Override
             public void onTick(long millisUntilFinished) {
+                progressBarPercent += dec; // 3 min
                 secs = (int) millisUntilFinished / 1000;
+                if (secs == 20) {
+                    snoodsActivity.showToast("Hurry up!", Toast.LENGTH_LONG);
+                }
             }
 
             @Override
             public void onFinish() {
                 secs = 0;
+                snoodsActivity.showToast("Time is over!", Toast.LENGTH_LONG);
                 mDeckIsEmpty = true;
+                mIsGameOver = true;
             }
         }.start();
 
@@ -198,21 +244,46 @@ public class SnoodsSurfaceView extends SurfaceView
     }
 
     private void flushDeck() {
-        mDeck = new int[20];
-        for (int i = 0; i < 20; ++i) {
-            mDeck[i] = mRandom.nextInt(2 + 1);
+        cardIndex = 6 + 13 + 13 * mLevel;
+        mDeck = new int[cardIndex];
+
+        // Add cards
+        for (int i = 0, j = 0; i < cardIndex; ++i, ++j) {
+            if (j > 12) {
+                j = 0;
+            }
+            mDeck[i] = j;
+
+            if (i >= cardIndex - 6) {
+                mDeck[i] = 13; // Jokers
+            }
         }
 
+        String c = "";
+        for (int i = 0; i < cardIndex; ++i) {
+            c += mDeck[i] + " ";
+        }
+        SnoodsActivity.toDebug(c);
+
+
+//        for (int i = 1; i <= 6 + 13 + 13 * mLevel; ++i) {
+//            if (i < 14) {
+//                mDeck[i - 1] = i;
+//            } else if (i > 13) {
+//                mDeck[i - 1] = i - 14;
+//            }
+//        }
+
         int _Change, _Tmp;
-        for (int Num1 = 0; Num1 < 20; Num1++) {
-            _Change = mRandom.nextInt(19 + 1);
+        for (int Num1 = 0; Num1 < cardIndex; Num1++) {
+            _Change = mRandom.nextInt(cardIndex);
             _Tmp = mDeck[Num1];
             mDeck[Num1] = mDeck[_Change];
             mDeck[_Change] = _Tmp;
         }
 
-        String c = "";
-        for (int i = 0; i < 20; ++i) {
+        c = "";
+        for (int i = 0; i < cardIndex; ++i) {
             c += mDeck[i] + " ";
         }
         SnoodsActivity.toDebug(c);
@@ -236,6 +307,18 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
+    private void paintColumnScores(Canvas canvas, Paint paint) {
+        for (int i = 0, j = 227; i < COLUMNS_COUNT; ++i, j += 159) {
+            paintNumber(canvas, paint, columnScores[i], j, 62, true, false);
+        }
+    }
+
+    private void paintProgressBar(Canvas canvas, Paint paint) {
+        paint.setColor(Color.parseColor("#CF5B56"));
+        canvas.drawRect(0, 0, progressBarPercent, 54, paint);
+        paint.reset();
+    }
+
     private void render(Canvas canvas) {
         if (canvas != null) {
             // Draw background
@@ -248,13 +331,13 @@ public class SnoodsSurfaceView extends SurfaceView
             paintNumber(mBitmapCanvas, mMainPaint, scores, 600, 6, false, false);
 
             // Draw Column scores
-            paintNumber(mBitmapCanvas, mMainPaint, scores, 227, 62, true, false);
-            paintNumber(mBitmapCanvas, mMainPaint, scores, 386, 62, true, false);
-            paintNumber(mBitmapCanvas, mMainPaint, scores, 544, 62, true, false);
-            paintNumber(mBitmapCanvas, mMainPaint, scores, 703, 62, true, false);
+            paintColumnScores(mBitmapCanvas, mMainPaint);
 
             // Draw cards count
             paintNumber(mBitmapCanvas, mMainPaint, cardIndex, 20, 288, false, false);
+
+            // Draw progress bar
+            paintProgressBar(mBitmapCanvas, mMainPaint);
 
             // Draw time
             paintNumber(mBitmapCanvas, mMainPaint, secs, 124, 4, false, true);
@@ -282,10 +365,10 @@ public class SnoodsSurfaceView extends SurfaceView
     }
 
     private void drawCardDecs(Canvas canvas, Paint paint) {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < COLUMNS_COUNT; ++i) {
             int listSize = columnsDecks[i].size();
             for (int j = 0; j < listSize; j++) {
-                int x = columnRects[i].centerX() - mX_card_conv_coord;
+                int x = columnRects[i].centerX() - mX_card_grab_coord;
                 int y = columnStartHeight + columnOffsets[i] + j * CARD_GAP;
                 canvas.drawBitmap(columnsDecks[i].get(j), x, y, paint);
             }
@@ -297,8 +380,8 @@ public class SnoodsSurfaceView extends SurfaceView
         mOutputScreenRect = new Rect(0, 0, mScreenWidth, mScreenHeight);
 
         cardRect = new Rect(0, 0, cardBitmaps[0].getWidth(), cardBitmaps[0].getHeight());
-        mX_card_conv_coord = cardRect.centerX();
-        mY_card_conv_coord = cardRect.centerY() / 2;
+        mX_card_grab_coord = cardRect.centerX();
+        mY_card_grab_coord = cardRect.centerY() / 2;
 
         columnRects[0] = new Rect(166, 56, 166 + 151, 56 + 424);
         columnRects[1] = new Rect(325, 56, 325 + 151, 56 + 424);
@@ -328,7 +411,7 @@ public class SnoodsSurfaceView extends SurfaceView
             x_to = initialCardCoordX;
             y_to = initialCardCoordY;
         } else {
-            x_to = columnRects[highlightColumn - 1].centerX() - mX_card_conv_coord;
+            x_to = columnRects[highlightColumn - 1].centerX() - mX_card_grab_coord;
             y_to = columnStartHeight + columnsDecks[highlightColumn - 1].size() * CARD_GAP;
         }
 
@@ -364,8 +447,8 @@ public class SnoodsSurfaceView extends SurfaceView
 
         if (x_to == mX_coord_from && y_to == mY_coord_from) {
             if (highlightColumn != 0 && !lockColumns[highlightColumn - 1]) {
-                scores++;
-                addCardToColumn();
+                scores += 50;
+                addCardToColumn(highlightColumn - 1);
                 switchToNextCard();
             }
             mIsDropingCard = false;
@@ -374,6 +457,24 @@ public class SnoodsSurfaceView extends SurfaceView
             mX_coord_from = 0;
             mY_coord_from = 0;
             return;
+        }
+    }
+
+    private void refreshScores(int column) {
+        int cardScore = mDeck[cardIndex - 1];
+        if (cardScore < 9) {
+            columnScores[column] += cardScore + 2;
+        } else if (cardScore >= 9 && cardScore < 12) {
+            columnScores[column] += 10;
+        } else if (cardScore == 12) {
+            if (columnScores[column] > 10) {
+                columnScores[column] += 1;
+            } else {
+                columnScores[column] += 11;
+            }
+        } else {
+            SnoodsActivity.toDebug("Joker");
+            columnScores[column] = 21;
         }
     }
 
@@ -391,24 +492,32 @@ public class SnoodsSurfaceView extends SurfaceView
         mY_card_coord = initialCardCoordY;
     }
 
-    private void addCardToColumn() {
-        columnsDecks[highlightColumn - 1].add(mCurrentCardBitmap);
+    private void addCardToColumn(int column) {
+        refreshScores(column);
+        columnsDecks[column].add(mCurrentCardBitmap);
     }
 
-    private void dropColumn(int column) {
+    private void dropColumn(int column, boolean all) {
         mIsDropingColumn = true;
         highlightColumn = 0;
         columnOffsets[column] += DROP_COLUMN_SPEED;
         if (columnOffsets[column] > mScreenHeight) {
             mIsDropingColumn = false;
-            SnoodsActivity.toDebug("This is: " + columnOffsets[column]);
+            if (!all) {
+                scores += 100 * (column + 1);
+            } else {
+                if (!mIsGameOver) {
+                    scores += columnsDecks[column].size() * 200;
+                }
+            }
             columnsDecks[column].clear();
             columnOffsets[column] = 0;
+            columnScores[column] = 0;
         }
     }
 
     private boolean allColumnsEmpty() {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < COLUMNS_COUNT; ++i) {
             if (!columnsDecks[i].isEmpty()) {
                 return false;
             }
@@ -417,9 +526,9 @@ public class SnoodsSurfaceView extends SurfaceView
     }
 
     private void dropAllColumns() {
-        for (int i = 4 - 1; i >= 0; --i) {
+        for (int i = COLUMNS_COUNT - 1; i >= 0; --i) {
             if (!columnsDecks[i].isEmpty()) {
-                dropColumn(i);
+                dropColumn(i, true);
                 break;
             }
         }
@@ -427,7 +536,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void lockColumn(int column) {
         for (int i = 0; i < columnsDecks[column].size(); ++i) {
-            columnsDecks[column].set(i, cardBitmaps[0]);
+            columnsDecks[column].set(i, cardBitmaps[14]);
         }
         lockColumns[column] = true;
     }
@@ -437,46 +546,88 @@ public class SnoodsSurfaceView extends SurfaceView
             dropCard();
         }
 
-        for (int i = 0; i < 4; ++i) {
-            if (columnsDecks[i].size() == 5) {
+        int locked = 0;
+        for (int i = 0; i < COLUMNS_COUNT; ++i) {
+            if (columnsDecks[i].size() == 5 && columnScores[i] < 21) {
+                dropColumn(i, false);
+            }
+
+            if (columnScores[i] > 21) {
                 lockColumn(i);
+            }
+
+            if (columnScores[i] == 21) {
+                dropColumn(i, false);
+            }
+
+            if (lockColumns[i]) {
+                locked++;
             }
         }
 
-//        for (int i = 0; i < 4; ++i) {
-//            if (columnsDecks[i].size() == 10) {
-//                dropColumn(i);
-//            }
-//        }
+        if (locked == COLUMNS_COUNT) {
+            mDeckIsEmpty = true;
+            mIsGameOver = true;
+        }
+
+        if (!toastShown) {
+            if (mIsGameOver) {
+                snoodsActivity.showToast("Game over!", Toast.LENGTH_LONG);
+                toastShown = true;
+            } else if (mDeckIsEmpty) {
+                if (mIsLastLevel) {
+                    snoodsActivity.showToast("Congratulations!", Toast.LENGTH_LONG);
+                } else {
+                    snoodsActivity.showToast("You Win! Enjoy next level!", Toast.LENGTH_LONG);
+                }
+                toastShown = true;
+            }
+        }
 
         if (mDeckIsEmpty) {
             dropAllColumns();
             if (allColumnsEmpty()) {
-                SnoodsActivity.toDebug("Win!");
-                resetGame();
+                SnoodsActivity.toDebug("Game End! Game Over: " + mIsGameOver);
+                resetGame(mIsGameOver);
             }
         }
     }
 
-    private void resetGame() {
+    private void resetGame(boolean gameOver) {
+        if (!gameOver) {
+            if (mIsLastLevel) {
+                mLevel++;
+            } else {
+                mLevel = 1;
+            }
+            if (mLevel == 4) {
+                mIsLastLevel = true;
+                mLevel = 3; // TODO: Fix
+            }
+        } else {
+            mLevel = 1;
+            scores = 0;
+        }
         mDeckIsEmpty = false;
         mIsDropingCard = false;
         mIsGrab = false;
-        cardIndex = 20;
+        cardIndex = 6 + 13 + 13 * mLevel;
         timer.start();
         mX_card_coord = initialCardCoordX;
         mY_card_coord = initialCardCoordY;
         highlightColumn = 0;
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < COLUMNS_COUNT; ++i) {
             lockColumns[i] = false;
         }
         flushDeck();
         resetDeckCards();
+        mIsGameOver = false;
+        toastShown = false;
     }
 
     private void resetDeckCards() {
-        mCurrentCardBitmap = cardBitmaps[mDeck[20 - 1]];
-        mNextCardBitmap = cardBitmaps[mDeck[20 - 2]];
+        mCurrentCardBitmap = cardBitmaps[mDeck[cardIndex - 1]];
+        mNextCardBitmap = cardBitmaps[mDeck[cardIndex - 2]];
     }
 
     private void start() {
@@ -492,7 +643,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     public int detectColumn(int x, int y) {
         // 1-4 column
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < COLUMNS_COUNT; ++i) {
             if (columnRects[i].contains(x, y)) {
                 return i + 1;
             }

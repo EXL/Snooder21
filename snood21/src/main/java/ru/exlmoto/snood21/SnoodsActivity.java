@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
+import android.widget.Toast;
 
 public class SnoodsActivity extends Activity {
 
@@ -18,7 +19,7 @@ public class SnoodsActivity extends Activity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        mSnoodsSurfaceView = new SnoodsSurfaceView(this);
+        mSnoodsSurfaceView = new SnoodsSurfaceView(this, this);
         setContentView(mSnoodsSurfaceView);
     }
 
@@ -41,14 +42,18 @@ public class SnoodsActivity extends Activity {
         int actionMasked = event.getActionMasked();
         int x = convertX(event.getRawX()) - win_coords[0];
         int y = convertY(event.getRawY()) - win_coords[1];
-        int x_c = x - SnoodsSurfaceView.mX_card_conv_coord;
-        int y_c = y - SnoodsSurfaceView.mY_card_conv_coord;
+        int x_c = x - SnoodsSurfaceView.mX_card_grab_coord;
+        int y_c = y - SnoodsSurfaceView.mY_card_grab_coord;
         if (!mSnoodsSurfaceView.mIsDropingCard && !mSnoodsSurfaceView.mDeckIsEmpty && !mSnoodsSurfaceView.mIsDropingColumn) {
             switch (actionMasked) {
                 case MotionEvent.ACTION_DOWN: {
                     mSnoodsSurfaceView.touchInDeckRect(x, y);
+                    int inColumnRect = mSnoodsSurfaceView.detectColumn(x, y);
                     if (mSnoodsSurfaceView.mIsGrab) {
                         mSnoodsSurfaceView.setCardCoords(x_c, y_c);
+                    } else if (inColumnRect > 0) {
+                        mSnoodsSurfaceView.setHighlightColumn(inColumnRect);
+                        mSnoodsSurfaceView.putCardToColumn(x_c, y_c);
                     }
                     break;
                 }
@@ -69,5 +74,15 @@ public class SnoodsActivity extends Activity {
             }
         }
         return super.onTouchEvent(event);
+    }
+
+    public void showToast(final String text, final int delay) {
+        final SnoodsActivity activity = this;
+        activity.runOnUiThread(new Runnable() {
+
+            public void run() {
+                Toast.makeText(activity, text, delay).show();
+            }
+        });
     }
 }
