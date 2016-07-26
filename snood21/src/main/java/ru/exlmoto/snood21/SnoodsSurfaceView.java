@@ -24,7 +24,7 @@ public class SnoodsSurfaceView extends SurfaceView
     private static final int BITMAPS_COUNT = 15;
     private static final int COLUMNS_COUNT = 4;
 
-    public static final int DIGITS_NUM = 11;
+    public static final int DIGITS_NUM = 13;
 
     public static final int DROP_CARD_SPEED = 15;
     public static final int DROP_COLUMN_SPEED = 10;
@@ -59,9 +59,9 @@ public class SnoodsSurfaceView extends SurfaceView
     private Bitmap mCurrentCardBitmap = null;
     private Bitmap mBackGroundBitmap = null;
     private Bitmap mScoreLabelBitmap = null;
-    private Bitmap mDigitsBitmap = null;
+    private Bitmap mCharBitmap = null;
 
-    private Bitmap[] mDigits = null;
+    private Bitmap[] mChars = null;
 
     private Rect cardRect = null;
     private Rect[] columnRects = null;
@@ -72,7 +72,7 @@ public class SnoodsSurfaceView extends SurfaceView
     public boolean mIsDropingCard = false;
     public boolean mIsGrab = false;
 
-    private int mLevel = 1;
+    private int mLevel = 0;
     private int[] mDeck = null;
 
     private Random mRandom = null;
@@ -91,19 +91,21 @@ public class SnoodsSurfaceView extends SurfaceView
     private int[] columnOffsets = null;
 
     private CountDownTimer timer = null;
-    private int secs = 0;
+    private int secs = 60 * 3;
 
     public boolean mIsDropingColumn = false;
     public boolean[] lockColumns = null;
     private int[] columnScores = null;
 
     public boolean mIsGameOver = false;
-    public boolean mIsLastLevel = false;
+    //public boolean mIsLastLevel = false;
 
     private SnoodsActivity snoodsActivity = null;
     private boolean toastShown = false;
 
     private float progressBarPercent = 0;
+
+    private boolean mIsTimerRun = false;
 
     public SnoodsSurfaceView(Context context, final SnoodsActivity snoodsActivity) {
         super(context);
@@ -123,8 +125,8 @@ public class SnoodsSurfaceView extends SurfaceView
 
         mBackGroundBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bkg_moto);
         mScoreLabelBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.score_moto);
-        mDigitsBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.digits_moto);
-        mDigits = new Bitmap[DIGITS_NUM];
+        mCharBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chars_moto);
+        mChars = new Bitmap[DIGITS_NUM];
         fillDigitsBitmap();
 
         columnRects = new Rect[COLUMNS_COUNT];
@@ -173,21 +175,28 @@ public class SnoodsSurfaceView extends SurfaceView
 
             @Override
             public void onTick(long millisUntilFinished) {
-                progressBarPercent += dec; // 3 min
-                secs = (int) millisUntilFinished / 1000;
-                if (secs == 20) {
-                    snoodsActivity.showToast("Hurry up!", Toast.LENGTH_LONG);
+                if (!mDeckIsEmpty) {
+                    progressBarPercent += dec; // 3 min
+                    secs = (int) millisUntilFinished / 1000;
+                    if (secs == 20) {
+                        snoodsActivity.showToast("Hurry up!", Toast.LENGTH_SHORT);
+                    }
                 }
             }
 
             @Override
             public void onFinish() {
-                secs = 0;
-                snoodsActivity.showToast("Time is over!", Toast.LENGTH_LONG);
-                mDeckIsEmpty = true;
-                mIsGameOver = true;
+                if (!mDeckIsEmpty) {
+                    secs = 0;
+                    progressBarPercent = 0;
+                    snoodsActivity.showToast("Time is over!", Toast.LENGTH_SHORT);
+                    mDeckIsEmpty = true;
+                    mIsGameOver = true;
+                    this.cancel();
+                    mIsTimerRun = false;
+                }
             }
-        }.start();
+        }/*.start()*/;
 
         // Set screen always on
         setKeepScreenOn(true);
@@ -201,8 +210,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private void fillDigitsBitmap() {
         for (int i = 0; i < DIGITS_NUM; ++i) {
             int x_off = i * 29;
-            SnoodsActivity.toDebug("" + x_off + " " + mDigitsBitmap.getWidth() + " " + mDigitsBitmap.getHeight());
-            mDigits[i] = Bitmap.createBitmap(mDigitsBitmap, x_off, 0, 29, 52);
+            SnoodsActivity.toDebug("" + x_off + " " + mCharBitmap.getWidth() + " " + mCharBitmap.getHeight());
+            mChars[i] = Bitmap.createBitmap(mCharBitmap, x_off, 0, 29, 52);
         }
     }
 
@@ -213,9 +222,9 @@ public class SnoodsSurfaceView extends SurfaceView
 
             for (int i = 0; i < len; ++i) {
                 if (!centered) {
-                    canvas.drawBitmap(mDigits[Character.getNumericValue(num.charAt(i))], x + i * 29, y, paint);
+                    canvas.drawBitmap(mChars[Character.getNumericValue(num.charAt(i))], x + i * 29, y, paint);
                 } else {
-                    canvas.drawBitmap(mDigits[Character.getNumericValue(num.charAt(i))], x - (len - 1) * 29 / 2 + i * 29, y, paint);
+                    canvas.drawBitmap(mChars[Character.getNumericValue(num.charAt(i))], x - (len - 1) * 29 / 2 + i * 29, y, paint);
                 }
             }
         } else {
@@ -234,17 +243,17 @@ public class SnoodsSurfaceView extends SurfaceView
             int len = timeS.length();
             int r = 0;
             for (int i = 0; i < len; ++i) {
-                canvas.drawBitmap(mDigits[Character.getNumericValue(timeS.charAt(i))], x + r + i * 29, y, paint);
+                canvas.drawBitmap(mChars[Character.getNumericValue(timeS.charAt(i))], x + r + i * 29, y, paint);
                 if (i == 1) {
                     r += 29;
-                    canvas.drawBitmap(mDigits[10], x + r + i * 29, y, paint);
+                    canvas.drawBitmap(mChars[10], x + r + i * 29, y, paint);
                 }
             }
         }
     }
 
     private void flushDeck() {
-        cardIndex = 6 + 13 + 13 * mLevel;
+        cardIndex = 6 + 13 + 13 * ((mLevel == 4) ? 3 : mLevel);
         mDeck = new int[cardIndex];
 
         // Add cards
@@ -309,7 +318,11 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void paintColumnScores(Canvas canvas, Paint paint) {
         for (int i = 0, j = 227; i < COLUMNS_COUNT; ++i, j += 159) {
-            paintNumber(canvas, paint, columnScores[i], j, 62, true, false);
+            if (lockColumns[i]) {
+                canvas.drawBitmap(mChars[12], j, 62, paint);
+            } else {
+                paintNumber(canvas, paint, columnScores[i], j, 62, true, false);
+            }
         }
     }
 
@@ -330,11 +343,17 @@ public class SnoodsSurfaceView extends SurfaceView
             // Draw scores
             paintNumber(mBitmapCanvas, mMainPaint, scores, 600, 6, false, false);
 
-            // Draw Column scores
+            // Draw column scores
             paintColumnScores(mBitmapCanvas, mMainPaint);
 
             // Draw cards count
             paintNumber(mBitmapCanvas, mMainPaint, cardIndex, 20, 288, false, false);
+
+            // Draw "L" letter
+            mBitmapCanvas.drawBitmap(mChars[11], 97, 288, mMainPaint);
+
+            // Draw level
+            paintNumber(mBitmapCanvas, mMainPaint, mLevel, 97 + 29, 288, false, false);
 
             // Draw progress bar
             paintProgressBar(mBitmapCanvas, mMainPaint);
@@ -447,6 +466,10 @@ public class SnoodsSurfaceView extends SurfaceView
 
         if (x_to == mX_coord_from && y_to == mY_coord_from) {
             if (highlightColumn != 0 && !lockColumns[highlightColumn - 1]) {
+                if (!mIsTimerRun) {
+                    timer.start();
+                    mIsTimerRun = true;
+                }
                 scores += 50;
                 addCardToColumn(highlightColumn - 1);
                 switchToNextCard();
@@ -549,6 +572,7 @@ public class SnoodsSurfaceView extends SurfaceView
         int locked = 0;
         for (int i = 0; i < COLUMNS_COUNT; ++i) {
             if (columnsDecks[i].size() == 5 && columnScores[i] < 21) {
+                columnScores[i] = 21;
                 dropColumn(i, false);
             }
 
@@ -575,7 +599,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 snoodsActivity.showToast("Game over!", Toast.LENGTH_LONG);
                 toastShown = true;
             } else if (mDeckIsEmpty) {
-                if (mIsLastLevel) {
+                if (mLevel == 4) {
                     snoodsActivity.showToast("Congratulations!", Toast.LENGTH_LONG);
                 } else {
                     snoodsActivity.showToast("You Win! Enjoy next level!", Toast.LENGTH_LONG);
@@ -595,14 +619,10 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void resetGame(boolean gameOver) {
         if (!gameOver) {
-            if (mIsLastLevel) {
+            if (mLevel < 4) {
                 mLevel++;
             } else {
                 mLevel = 1;
-            }
-            if (mLevel == 4) {
-                mIsLastLevel = true;
-                mLevel = 3; // TODO: Fix
             }
         } else {
             mLevel = 1;
@@ -611,8 +631,11 @@ public class SnoodsSurfaceView extends SurfaceView
         mDeckIsEmpty = false;
         mIsDropingCard = false;
         mIsGrab = false;
-        cardIndex = 6 + 13 + 13 * mLevel;
-        timer.start();
+        cardIndex = 6 + 13 + 13 * ((mLevel == 4) ? 3 : mLevel);
+        timer.cancel();
+        mIsTimerRun = false;
+        secs = 60 * 3;
+        //timer.start();
         mX_card_coord = initialCardCoordX;
         mY_card_coord = initialCardCoordY;
         highlightColumn = 0;
@@ -623,6 +646,7 @@ public class SnoodsSurfaceView extends SurfaceView
         resetDeckCards();
         mIsGameOver = false;
         toastShown = false;
+        progressBarPercent = 0;
     }
 
     private void resetDeckCards() {
