@@ -9,6 +9,7 @@ public class SnoodsAnimationTimer extends CountDownTimer {
 
     private ArrayList<Bitmap>[] columnsDecks = null;
     ArrayList<Integer>[] columnsDecksValue = null;
+    private boolean[] lockColumns = null;
     private int column;
     private Bitmap[] bitmaps = null;
     private boolean firstFrame = true;
@@ -19,6 +20,7 @@ public class SnoodsAnimationTimer extends CountDownTimer {
                                 long countDownInterval,
                                 ArrayList<Bitmap>[] columnsDecks,
                                 ArrayList<Integer>[] columnsDecksValue,
+                                boolean[] lockColumns,
                                 int column,
                                 Bitmap[] bitmaps,
                                 boolean lock) {
@@ -26,6 +28,7 @@ public class SnoodsAnimationTimer extends CountDownTimer {
 
         this.columnsDecks = columnsDecks;
         this.columnsDecksValue = columnsDecksValue;
+        this.lockColumns = lockColumns;
         this.column = column;
         this.bitmaps = bitmaps;
         this.lock = lock;
@@ -47,31 +50,35 @@ public class SnoodsAnimationTimer extends CountDownTimer {
         }
     }
 
+    private void animateFirstFrame() {
+        if (lock || lockColumns[column]) {
+            animate(bitmaps[17 + 16]);
+        } else {
+            animate(17);
+        }
+    }
+
+    private void animateSecondFrame() {
+        if (lock || lockColumns[column]) {
+            animate(bitmaps[16]);
+        } else {
+            animate(0);
+        }
+    }
+
     @Override
     public void onTick(long millisUntilFinished) {
         if (firstFrame) {
-            if (lock) {
-                animate(bitmaps[17 + 16]);
-            } else {
-                animate(17);
-            }
+            animateFirstFrame();
             firstFrame = false;
         } else {
-            if (lock) {
-                animate(bitmaps[16]);
-            } else {
-                animate(0);
-            }
+            animateSecondFrame();
             firstFrame = true;
         }
     }
 
     @Override
     public void onFinish() {
-        if (lock) {
-            animate(bitmaps[16]);
-        } else {
-            animate(0);
-        }
+        animateSecondFrame();
     }
 }

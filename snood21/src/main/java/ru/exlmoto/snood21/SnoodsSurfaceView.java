@@ -365,6 +365,9 @@ public class SnoodsSurfaceView extends SurfaceView
                 mBitmapCanvas.drawBitmap(mCurrentCardBitmap, mX_card_coord, mY_card_coord, mMainPaint);
             }
 
+            // Draw FPS
+            paintNumber(mBitmapCanvas, mMainPaint, getTimesPerSecond(), 9, 340, false, false);
+
             mMainPaint.setFilterBitmap(true);
             canvas.drawBitmap(mGameBitmap, mOriginalScreenRect, mOutputScreenRect, mMainPaint);
         }
@@ -519,7 +522,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 @Override
                 public void run() {
                     new SnoodsAnimationTimer(1000, 250, columnsDecks,
-                            columnsDecksValue, column, cardBitmaps, false).start();
+                            columnsDecksValue, lockColumns, column, cardBitmaps, false).start();
                 }
             });
         }
@@ -570,7 +573,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 @Override
                 public void run() {
                     new SnoodsAnimationTimer(1000, 250, columnsDecks,
-                            columnsDecksValue, column, cardBitmaps, true).start();
+                            columnsDecksValue, lockColumns, column, cardBitmaps, true).start();
                 }
             });
             lockColumns[column] = true;
@@ -745,5 +748,21 @@ public class SnoodsSurfaceView extends SurfaceView
                 }
             }
         }
+    }
+
+    // TODO: to new class
+    private long m_lLastCallTime = 0L;
+
+    public int getTimesPerSecond() {
+        int i = 0;
+        long l1 = System.currentTimeMillis();
+        long l2 = l1 - this.m_lLastCallTime;
+        if (0L != l2) {
+            i = (int) (1000L / l2);
+        } else {
+            i = 0;
+        }
+        this.m_lLastCallTime = l1;
+        return i;
     }
 }
