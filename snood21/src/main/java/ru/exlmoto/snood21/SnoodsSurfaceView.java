@@ -21,7 +21,7 @@ public class SnoodsSurfaceView extends SurfaceView
     public static final int ORIGINAL_WIDTH = 800;
     public static final int ORIGINAL_HEIGHT = 480;
 
-    private static final int BITMAPS_COUNT = 15;
+    private static final int CARD_BITMAPS_COUNT = 17 * 2;
     private static final int COLUMNS_COUNT = 4;
 
     public static final int DIGITS_NUM = 13;
@@ -72,14 +72,16 @@ public class SnoodsSurfaceView extends SurfaceView
     public boolean mIsDropingCard = false;
     public boolean mIsGrab = false;
 
-    private int mLevel = 0;
+    private int mLevel = 1;
     private int[] mDeck = null;
 
     private Random mRandom = null;
     private Bitmap[] cardBitmaps = null;
+    private Bitmap cardAllBitmap = null;
     private Bitmap mNextCardBitmap = null;
 
     private ArrayList<Bitmap>[] columnsDecks = null;
+    private ArrayList<Integer>[] columnsDecksValue = null;
     private int cardIndex = 32; // First level
     private int scores = 0;
 
@@ -98,7 +100,6 @@ public class SnoodsSurfaceView extends SurfaceView
     private int[] columnScores = null;
 
     public boolean mIsGameOver = false;
-    //public boolean mIsLastLevel = false;
 
     private SnoodsActivity snoodsActivity = null;
     private boolean toastShown = false;
@@ -106,6 +107,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private float progressBarPercent = 0;
 
     private boolean mIsTimerRun = false;
+
+    public static boolean animateColumn = true;
 
     public SnoodsSurfaceView(Context context, final SnoodsActivity snoodsActivity) {
         super(context);
@@ -130,39 +133,18 @@ public class SnoodsSurfaceView extends SurfaceView
         fillDigitsBitmap();
 
         columnRects = new Rect[COLUMNS_COUNT];
-        cardBitmaps = new Bitmap[BITMAPS_COUNT];
-
-        /* function generateNames() {
-        var size = 15;
-            for (var i = 0; i < size; ++i) {
-                console.log('cardBitmaps[' + i +
-                '] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto' + i +
-                ');');
-            }
-        } */
-
-        cardBitmaps[0] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto0);
-        cardBitmaps[1] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto1);
-        cardBitmaps[2] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto2);
-        cardBitmaps[3] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto3);
-        cardBitmaps[4] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto4);
-        cardBitmaps[5] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto5);
-        cardBitmaps[6] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto6);
-        cardBitmaps[7] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto7);
-        cardBitmaps[8] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto8);
-        cardBitmaps[9] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto9);
-        cardBitmaps[10] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto10);
-        cardBitmaps[11] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto11);
-        cardBitmaps[12] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto12);
-        cardBitmaps[13] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto13);
-        cardBitmaps[14] = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_moto14);
+        cardBitmaps = new Bitmap[CARD_BITMAPS_COUNT];
+        cardAllBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.deck_moto);
+        fillDecksBitmap();
 
         columnsDecks = new ArrayList[COLUMNS_COUNT];
+        columnsDecksValue = new ArrayList[COLUMNS_COUNT];
         columnOffsets = new int[COLUMNS_COUNT];
         lockColumns = new boolean[COLUMNS_COUNT];
         columnScores = new int[COLUMNS_COUNT];
         for (int i = 0; i < COLUMNS_COUNT; ++i) {
             columnsDecks[i] = new ArrayList<Bitmap>();
+            columnsDecksValue[i] = new ArrayList<Integer>();
             columnOffsets[i] = 0;
             columnScores[i] = 0;
             lockColumns[i] = false;
@@ -207,10 +189,19 @@ public class SnoodsSurfaceView extends SurfaceView
         requestFocus();
     }
 
+    private void fillDecksBitmap() {
+        for (int i = 0; i < CARD_BITMAPS_COUNT; ++i) {
+            int x_off = (i > 16) ? (i - 17) * 145 : i * 145;
+            int y_off = (i > 16) ? 200 : 0;
+
+            SnoodsActivity.toDebug("" + i + " " + x_off + " " + y_off);
+            cardBitmaps[i] = Bitmap.createBitmap(cardAllBitmap, x_off, y_off, 145, 200);
+        }
+    }
+
     private void fillDigitsBitmap() {
         for (int i = 0; i < DIGITS_NUM; ++i) {
             int x_off = i * 29;
-            SnoodsActivity.toDebug("" + x_off + " " + mCharBitmap.getWidth() + " " + mCharBitmap.getHeight());
             mChars[i] = Bitmap.createBitmap(mCharBitmap, x_off, 0, 29, 52);
         }
     }
@@ -257,14 +248,19 @@ public class SnoodsSurfaceView extends SurfaceView
         mDeck = new int[cardIndex];
 
         // Add cards
-        for (int i = 0, j = 0; i < cardIndex; ++i, ++j) {
+        for (int i = 0, j = 0, k = 0; i < cardIndex; ++i, ++j) {
             if (j > 12) {
                 j = 0;
             }
             mDeck[i] = j;
 
             if (i >= cardIndex - 6) {
-                mDeck[i] = 13; // Jokers
+                mDeck[i] = 13 + k; // Jokers
+                if (k < 2) {
+                    k++;
+                } else {
+                    k = 0;
+                }
             }
         }
 
@@ -273,15 +269,6 @@ public class SnoodsSurfaceView extends SurfaceView
             c += mDeck[i] + " ";
         }
         SnoodsActivity.toDebug(c);
-
-
-//        for (int i = 1; i <= 6 + 13 + 13 * mLevel; ++i) {
-//            if (i < 14) {
-//                mDeck[i - 1] = i;
-//            } else if (i > 13) {
-//                mDeck[i - 1] = i - 14;
-//            }
-//        }
 
         int _Change, _Tmp;
         for (int Num1 = 0; Num1 < cardIndex; Num1++) {
@@ -359,7 +346,7 @@ public class SnoodsSurfaceView extends SurfaceView
             paintProgressBar(mBitmapCanvas, mMainPaint);
 
             // Draw time
-            paintNumber(mBitmapCanvas, mMainPaint, secs, 124, 4, false, true);
+            paintNumber(mBitmapCanvas, mMainPaint, secs, 104, 4, false, true);
 
             // Draw card decks
             drawCardDecs(mBitmapCanvas, mMainPaint);
@@ -485,6 +472,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void refreshScores(int column) {
         int cardScore = mDeck[cardIndex - 1];
+        columnsDecksValue[column].add(cardScore);
         if (cardScore < 9) {
             columnScores[column] += cardScore + 2;
         } else if (cardScore >= 9 && cardScore < 12) {
@@ -520,12 +508,24 @@ public class SnoodsSurfaceView extends SurfaceView
         columnsDecks[column].add(mCurrentCardBitmap);
     }
 
-    private void dropColumn(int column, boolean all) {
+    private void dropColumn(final int column, boolean all) {
         mIsDropingColumn = true;
         highlightColumn = 0;
         columnOffsets[column] += DROP_COLUMN_SPEED;
+        if (animateColumn) {
+            SnoodsActivity.toDebug("Once??????");
+            snoodsActivity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    new SnoodsAnimationTimer(1000, 250, columnsDecks,
+                            columnsDecksValue, column, cardBitmaps, false).start();
+                }
+            });
+        }
         if (columnOffsets[column] > mScreenHeight) {
             mIsDropingColumn = false;
+            animateColumn = true;
             if (!all) {
                 scores += 100 * (column + 1);
             } else {
@@ -534,6 +534,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 }
             }
             columnsDecks[column].clear();
+            columnsDecksValue[column].clear();
             columnOffsets[column] = 0;
             columnScores[column] = 0;
         }
@@ -557,11 +558,23 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
-    private void lockColumn(int column) {
-        for (int i = 0; i < columnsDecks[column].size(); ++i) {
-            columnsDecks[column].set(i, cardBitmaps[14]);
+    private void lockColumn(final int column) {
+        if (!lockColumns[column]) {
+            for (int i = 0; i < columnsDecks[column].size(); ++i) {
+                SnoodsActivity.toDebug("--------");
+                columnsDecks[column].set(i, cardBitmaps[16]);
+            }
+
+            snoodsActivity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    new SnoodsAnimationTimer(1000, 250, columnsDecks,
+                            columnsDecksValue, column, cardBitmaps, true).start();
+                }
+            });
+            lockColumns[column] = true;
         }
-        lockColumns[column] = true;
     }
 
     private void tick() {
