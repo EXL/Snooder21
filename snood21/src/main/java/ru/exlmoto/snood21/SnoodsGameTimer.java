@@ -25,7 +25,7 @@ public class SnoodsGameTimer extends CountDownTimer {
     @Override
     public void onTick(long millisUntilFinished) {
         if (!snoodsSurfaceView.mDeckIsEmpty) {
-            snoodsSurfaceView.progressBarPercent += dec; // 3 min
+            snoodsSurfaceView.progressBarPercent += dec;
             snoodsSurfaceView.secs = (int) millisUntilFinished / 1000;
             if (snoodsSurfaceView.secs == 20) {
                 snoodsActivity.showToast("Hurry up!", Toast.LENGTH_SHORT);

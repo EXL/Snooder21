@@ -139,8 +139,8 @@ public class SnoodsSurfaceView extends SurfaceView
 
         mBackGroundBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bkg_moto);
         backGroundWinBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.win_moto);
-
         mTextAllBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.text_moto);
+        cardAllBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.deck_moto);
 
         mLabels = new Bitmap[TEXT_NUM];
         fillLabelsBitmap();
@@ -150,7 +150,6 @@ public class SnoodsSurfaceView extends SurfaceView
 
         columnRects = new Rect[COLUMNS_COUNT];
         cardBitmaps = new Bitmap[CARD_BITMAPS_COUNT];
-        cardAllBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.deck_moto);
         fillDecksBitmap();
 
         columnsDecks = new ArrayList[COLUMNS_COUNT];
@@ -846,6 +845,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        timer.cancel();
         boolean shutdown = false;
         mIsRunning = false;
         while (!shutdown) {
