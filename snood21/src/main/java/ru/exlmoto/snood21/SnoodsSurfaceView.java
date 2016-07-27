@@ -92,8 +92,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private int columnStartHeight = 111;
     private int[] columnOffsets = null;
 
-    private CountDownTimer timer = null;
-    private int secs = 60 * 3;
+    private SnoodsGameTimer timer = null;
+    public int secs = 60 * 3;
 
     public boolean mIsDropingColumn = false;
     public boolean[] lockColumns = null;
@@ -104,9 +104,9 @@ public class SnoodsSurfaceView extends SurfaceView
     private SnoodsActivity snoodsActivity = null;
     private boolean toastShown = false;
 
-    private float progressBarPercent = 0;
+    public float progressBarPercent = 0;
 
-    private boolean mIsTimerRun = false;
+    public boolean mIsTimerRun = false;
 
     public static boolean animateColumn = true;
 
@@ -150,35 +150,7 @@ public class SnoodsSurfaceView extends SurfaceView
             lockColumns[i] = false;
         }
 
-        // TODO: refactor overload
-        timer = new CountDownTimer(60000 * 3, 1000) { // 3 min
-
-            private float dec = 400 / 180;
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-                if (!mDeckIsEmpty) {
-                    progressBarPercent += dec; // 3 min
-                    secs = (int) millisUntilFinished / 1000;
-                    if (secs == 20) {
-                        snoodsActivity.showToast("Hurry up!", Toast.LENGTH_SHORT);
-                    }
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                if (!mDeckIsEmpty) {
-                    secs = 0;
-                    progressBarPercent = 0;
-                    snoodsActivity.showToast("Time is over!", Toast.LENGTH_SHORT);
-                    mDeckIsEmpty = true;
-                    mIsGameOver = true;
-                    this.cancel();
-                    mIsTimerRun = false;
-                }
-            }
-        }/*.start()*/;
+        createCountDownTimer(60000 * 3, 1000);
 
         // Set screen always on
         setKeepScreenOn(true);
@@ -187,6 +159,24 @@ public class SnoodsSurfaceView extends SurfaceView
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
+    }
+
+    private void stopTimer() {
+        timer.cancel();
+        timer = null;
+    }
+
+    private void createCountDownTimer(final long millisInFuture,
+                                      final long countDownInterval) {
+        final SnoodsSurfaceView snoodsSurfaceView = this;
+        snoodsActivity.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                timer = new SnoodsGameTimer(millisInFuture, countDownInterval,
+                        snoodsSurfaceView, snoodsActivity);
+            }
+        });
     }
 
     private void fillDecksBitmap() {
@@ -648,10 +638,33 @@ public class SnoodsSurfaceView extends SurfaceView
         mIsDropingCard = false;
         mIsGrab = false;
         cardIndex = 6 + 13 + 13 * ((mLevel == 4) ? 3 : mLevel);
-        timer.cancel();
+
+        stopTimer();
         mIsTimerRun = false;
-        secs = 60 * 3;
-        //timer.start();
+        switch (mLevel) {
+            case 1:
+            default: {
+                secs = 60 * 3;
+                createCountDownTimer(60000 * 3, 1000);
+                break;
+            }
+            case 2: {
+                secs = 60 * 3 - 10;
+                createCountDownTimer(60000 * 3 - 10000, 1000);
+                break;
+            }
+            case 3: {
+                secs = 60 * 3 - 15;
+                createCountDownTimer(60000 * 3 - 15000, 1000);
+                break;
+            }
+            case 4: {
+                secs = 60 * 3 - 20;
+                createCountDownTimer(60000 * 3 - 20000, 1000);
+                break;
+            }
+        }
+
         mX_card_coord = initialCardCoordX;
         mY_card_coord = initialCardCoordY;
         highlightColumn = 0;
@@ -750,7 +763,7 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
-    // TODO: to new class
+    // TODO: to new class ?
     private long m_lLastCallTime = 0L;
 
     public int getTimesPerSecond() {
