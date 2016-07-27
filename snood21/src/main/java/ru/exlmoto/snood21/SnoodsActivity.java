@@ -37,14 +37,17 @@ public class SnoodsActivity extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int[] win_coords = new int[2];
-        mSnoodsSurfaceView.getLocationInWindow(win_coords);
-        int actionMasked = event.getActionMasked();
-        int x = convertX(event.getRawX()) - win_coords[0];
-        int y = convertY(event.getRawY()) - win_coords[1];
-        int x_c = x - SnoodsSurfaceView.mX_card_grab_coord;
-        int y_c = y - SnoodsSurfaceView.mY_card_grab_coord;
-        if (!mSnoodsSurfaceView.mIsDropingCard && !mSnoodsSurfaceView.mDeckIsEmpty && !mSnoodsSurfaceView.mIsDropingColumn) {
+        if (!mSnoodsSurfaceView.mIsDropingCard &&
+                !mSnoodsSurfaceView.mDeckIsEmpty &&
+                !mSnoodsSurfaceView.mIsDropingColumn &&
+                !mSnoodsSurfaceView.mIsWinAnimation) {
+            int[] winCoordinates = new int[2];
+            mSnoodsSurfaceView.getLocationInWindow(winCoordinates);
+            int actionMasked = event.getActionMasked();
+            int x = convertX(event.getRawX()) - winCoordinates[0];
+            int y = convertY(event.getRawY()) - winCoordinates[1];
+            int x_c = x - SnoodsSurfaceView.mX_card_grab_coord;
+            int y_c = y - SnoodsSurfaceView.mY_card_grab_coord;
             switch (actionMasked) {
                 case MotionEvent.ACTION_DOWN: {
                     mSnoodsSurfaceView.touchInDeckRect(x, y);

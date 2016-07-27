@@ -25,7 +25,6 @@ public class SnoodsGameTimer extends CountDownTimer {
     @Override
     public void onTick(long millisUntilFinished) {
         if (!snoodsSurfaceView.mDeckIsEmpty) {
-            snoodsActivity.toDebug("Dec: " + dec + " progressBarPercent: " + snoodsSurfaceView.progressBarPercent);
             snoodsSurfaceView.progressBarPercent += dec; // 3 min
             snoodsSurfaceView.secs = (int) millisUntilFinished / 1000;
             if (snoodsSurfaceView.secs == 20) {
@@ -45,9 +44,5 @@ public class SnoodsGameTimer extends CountDownTimer {
             this.cancel();
             snoodsSurfaceView.mIsTimerRun = false;
         }
-    }
-
-    public void stop() {
-        this.cancel();
     }
 }

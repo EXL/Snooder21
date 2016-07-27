@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.CountDownTimer;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
@@ -24,7 +23,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private static final int CARD_BITMAPS_COUNT = 17 * 2;
     private static final int COLUMNS_COUNT = 4;
 
-    public static final int DIGITS_NUM = 13;
+    public static final int CHARS_NUM = 13;
+    public static final int TEXT_NUM = 5;
 
     public static final int DROP_CARD_SPEED = 15;
     public static final int DROP_COLUMN_SPEED = 10;
@@ -58,9 +58,9 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private Bitmap mCurrentCardBitmap = null;
     private Bitmap mBackGroundBitmap = null;
-    private Bitmap mScoreLabelBitmap = null;
-    private Bitmap mCharBitmap = null;
 
+    private Bitmap mTextAllBitmap = null;
+    private Bitmap[] mLabels = null;
     private Bitmap[] mChars = null;
 
     private Rect cardRect = null;
@@ -110,6 +110,17 @@ public class SnoodsSurfaceView extends SurfaceView
 
     public static boolean animateColumn = true;
 
+    private Bitmap backGroundWinBitmap = null;
+    public boolean mIsWinAnimation = false;
+
+    private int x_anim_sprite_start = 145;
+    private int y_anim_sprite_start = 200 / 6;
+    private int x_anim_sprite = 0;
+    private int y_anim_sprite = 0;
+    private boolean showBlinkLabel = false;
+
+    private int[] sixRandomCards = null;
+
     public SnoodsSurfaceView(Context context, final SnoodsActivity snoodsActivity) {
         super(context);
 
@@ -127,9 +138,14 @@ public class SnoodsSurfaceView extends SurfaceView
         mMainPaint = new Paint();
 
         mBackGroundBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bkg_moto);
-        mScoreLabelBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.score_moto);
-        mCharBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chars_moto);
-        mChars = new Bitmap[DIGITS_NUM];
+        backGroundWinBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.win_moto);
+
+        mTextAllBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.text_moto);
+
+        mLabels = new Bitmap[TEXT_NUM];
+        fillLabelsBitmap();
+
+        mChars = new Bitmap[CHARS_NUM];
         fillDigitsBitmap();
 
         columnRects = new Rect[COLUMNS_COUNT];
@@ -150,6 +166,9 @@ public class SnoodsSurfaceView extends SurfaceView
             lockColumns[i] = false;
         }
 
+        sixRandomCards = new int[6];
+        setSixRandomCardsForAnimations();
+
         createCountDownTimer(60000 * 3, 1000);
 
         // Set screen always on
@@ -159,6 +178,12 @@ public class SnoodsSurfaceView extends SurfaceView
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
+    }
+
+    private void setSixRandomCardsForAnimations() {
+        for (int i = 0; i < 6; ++i) {
+            sixRandomCards[i] = mRandom.nextInt(CARD_BITMAPS_COUNT / 2 - 1); // Without "X" card
+        }
     }
 
     private void stopTimer() {
@@ -189,10 +214,17 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
+    private void fillLabelsBitmap() {
+        for (int i = 0; i < TEXT_NUM; ++i) {
+            int y_off = i * 52 + i * 1;
+            mLabels[i] = Bitmap.createBitmap(mTextAllBitmap, 0, y_off, mTextAllBitmap.getWidth(), 52);
+        }
+    }
+
     private void fillDigitsBitmap() {
-        for (int i = 0; i < DIGITS_NUM; ++i) {
+        for (int i = 0; i < CHARS_NUM; ++i) {
             int x_off = i * 29;
-            mChars[i] = Bitmap.createBitmap(mCharBitmap, x_off, 0, 29, 52);
+            mChars[i] = Bitmap.createBitmap(mTextAllBitmap, x_off, 52 * 5 + 4, 29, 52);
         }
     }
 
@@ -311,55 +343,104 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void render(Canvas canvas) {
         if (canvas != null) {
-            // Draw background
-            mBitmapCanvas.drawBitmap(mBackGroundBitmap, 0, 0, mMainPaint);
+            if (!mIsWinAnimation) {
+                // Draw background
+                mBitmapCanvas.drawBitmap(mBackGroundBitmap, 0, 0, mMainPaint);
 
-            // Draw score label
-            mBitmapCanvas.drawBitmap(mScoreLabelBitmap, 419, 2, mMainPaint);
+                // Draw score label
+                mBitmapCanvas.drawBitmap(mLabels[4], 419, 2, mMainPaint);
 
-            // Draw scores
-            paintNumber(mBitmapCanvas, mMainPaint, scores, 600, 6, false, false);
+                // Draw scores
+                paintNumber(mBitmapCanvas, mMainPaint, scores, 600, 6, false, false);
 
-            // Draw column scores
-            paintColumnScores(mBitmapCanvas, mMainPaint);
+                // Draw column scores
+                paintColumnScores(mBitmapCanvas, mMainPaint);
 
-            // Draw cards count
-            paintNumber(mBitmapCanvas, mMainPaint, cardIndex, 20, 288, false, false);
+                // Draw cards count
+                paintNumber(mBitmapCanvas, mMainPaint, cardIndex, 20, 288, false, false);
 
-            // Draw "L" letter
-            mBitmapCanvas.drawBitmap(mChars[11], 97, 288, mMainPaint);
+                // Draw "L" letter
+                mBitmapCanvas.drawBitmap(mChars[11], 97, 288, mMainPaint);
 
-            // Draw level
-            paintNumber(mBitmapCanvas, mMainPaint, mLevel, 97 + 29, 288, false, false);
+                // Draw level
+                paintNumber(mBitmapCanvas, mMainPaint, mLevel, 97 + 29, 288, false, false);
 
-            // Draw progress bar
-            paintProgressBar(mBitmapCanvas, mMainPaint);
+                // Draw progress bar
+                paintProgressBar(mBitmapCanvas, mMainPaint);
 
-            // Draw time
-            paintNumber(mBitmapCanvas, mMainPaint, secs, 104, 4, false, true);
+                // Draw time
+                paintNumber(mBitmapCanvas, mMainPaint, secs, 104, 4, false, true);
 
-            // Draw card decks
-            drawCardDecs(mBitmapCanvas, mMainPaint);
+                // Draw card decks
+                drawCardDecs(mBitmapCanvas, mMainPaint);
 
-            // Draw Highlight
-            highlightColumn(mBitmapCanvas, mMainPaint, highlightColumn);
+                // Draw Highlight
+                highlightColumn(mBitmapCanvas, mMainPaint, highlightColumn);
 
-            // Draw cards
-            if (cardIndex > 2) {
-                mBitmapCanvas.drawBitmap(mNextCardBitmap, initialCardCoordX, initialCardCoordY - 10, mMainPaint);
+                // Draw cards
+                if (cardIndex > 2) {
+                    mBitmapCanvas.drawBitmap(mNextCardBitmap, initialCardCoordX, initialCardCoordY - 10, mMainPaint);
+                }
+                if (cardIndex > 1) {
+                    mBitmapCanvas.drawBitmap(mNextCardBitmap, initialCardCoordX, initialCardCoordY - 5, mMainPaint);
+                }
+                if (!mDeckIsEmpty) {
+                    mBitmapCanvas.drawBitmap(mCurrentCardBitmap, mX_card_coord, mY_card_coord, mMainPaint);
+                }
+
+                // Draw FPS
+                paintNumber(mBitmapCanvas, mMainPaint, getTimesPerSecond(), 9, 340, false, false);
+            } else {
+                paintWinAnimation(mBitmapCanvas, mMainPaint);
             }
-            if (cardIndex > 1) {
-                mBitmapCanvas.drawBitmap(mNextCardBitmap, initialCardCoordX, initialCardCoordY - 5, mMainPaint);
-            }
-            if (!mDeckIsEmpty) {
-                mBitmapCanvas.drawBitmap(mCurrentCardBitmap, mX_card_coord, mY_card_coord, mMainPaint);
-            }
-
-            // Draw FPS
-            paintNumber(mBitmapCanvas, mMainPaint, getTimesPerSecond(), 9, 340, false, false);
 
             mMainPaint.setFilterBitmap(true);
             canvas.drawBitmap(mGameBitmap, mOriginalScreenRect, mOutputScreenRect, mMainPaint);
+        }
+    }
+
+    private void drawVerticalCardAnimation(Canvas canvas, Paint paint) {
+        for (int i = 0; i < 6; ++i) {
+            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+                    x_anim_sprite_start,
+                    y_anim_sprite + (200 + CARD_GAP) * i - (200 + CARD_GAP) * 6, paint);
+            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+                    ORIGINAL_WIDTH - x_anim_sprite_start - 145,
+                    -y_anim_sprite + (200 + CARD_GAP) * i + ORIGINAL_HEIGHT, paint);
+        }
+    }
+
+    private void drawHorizontalCardAnimation(Canvas canvas, Paint paint) {
+        for (int i = 0; i < 6; ++i) {
+            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+                    x_anim_sprite + (145 + CARD_GAP) * i - (145 + CARD_GAP) * 6,
+                    y_anim_sprite_start, paint);
+            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+                    -x_anim_sprite + (145 + CARD_GAP) * i + ORIGINAL_WIDTH,
+                    ORIGINAL_HEIGHT - y_anim_sprite_start - 200, paint);
+        }
+    }
+
+    private void paintWinAnimation(Canvas canvas, Paint paint) {
+        canvas.drawBitmap(backGroundWinBitmap, 0, 0, paint);
+        int x_or_y = 0;
+        switch (mLevel) {
+            default: {
+                drawHorizontalCardAnimation(canvas, paint);
+                x_or_y = x_anim_sprite;
+                break;
+            }
+            case 4: {
+                drawVerticalCardAnimation(canvas, paint);
+                x_or_y = y_anim_sprite;
+                break;
+            }
+        }
+        if (showBlinkLabel) {
+            canvas.drawBitmap(mLabels[mLevel - 1],
+                    -(x_or_y / 2) + ORIGINAL_WIDTH,
+                    ORIGINAL_HEIGHT / 2 - mLabels[mLevel - 1].getHeight() / 2,
+                    paint);
         }
     }
 
@@ -571,54 +652,85 @@ public class SnoodsSurfaceView extends SurfaceView
     }
 
     private void tick() {
-        if (mIsDropingCard) {
-            dropCard();
-        }
-
-        int locked = 0;
-        for (int i = 0; i < COLUMNS_COUNT; ++i) {
-            if (columnsDecks[i].size() == 5 && columnScores[i] < 21) {
-                columnScores[i] = 21;
-                dropColumn(i, false);
+        if (!mIsWinAnimation) {
+            if (mIsDropingCard) {
+                dropCard();
             }
 
-            if (columnScores[i] > 21) {
-                lockColumn(i);
-            }
-
-            if (columnScores[i] == 21) {
-                dropColumn(i, false);
-            }
-
-            if (lockColumns[i]) {
-                locked++;
-            }
-        }
-
-        if (locked == COLUMNS_COUNT) {
-            mDeckIsEmpty = true;
-            mIsGameOver = true;
-        }
-
-        if (!toastShown) {
-            if (mIsGameOver) {
-                snoodsActivity.showToast("Game over!", Toast.LENGTH_LONG);
-                toastShown = true;
-            } else if (mDeckIsEmpty) {
-                if (mLevel == 4) {
-                    snoodsActivity.showToast("Congratulations!", Toast.LENGTH_LONG);
-                } else {
-                    snoodsActivity.showToast("You Win! Enjoy next level!", Toast.LENGTH_LONG);
+            int locked = 0;
+            for (int i = 0; i < COLUMNS_COUNT; ++i) {
+                if (columnsDecks[i].size() == 5 && columnScores[i] < 21) {
+                    columnScores[i] = 21;
+                    dropColumn(i, false);
                 }
-                toastShown = true;
-            }
-        }
 
-        if (mDeckIsEmpty) {
-            dropAllColumns();
-            if (allColumnsEmpty()) {
-                SnoodsActivity.toDebug("Game End! Game Over: " + mIsGameOver);
-                resetGame(mIsGameOver);
+                if (columnScores[i] > 21) {
+                    lockColumn(i);
+                }
+
+                if (columnScores[i] == 21) {
+                    dropColumn(i, false);
+                }
+
+                if (lockColumns[i]) {
+                    locked++;
+                }
+            }
+
+            if (locked == COLUMNS_COUNT) {
+                mDeckIsEmpty = true;
+                mIsGameOver = true;
+            }
+
+            if (!toastShown) {
+                if (mIsGameOver) {
+                    snoodsActivity.showToast("Game over!", Toast.LENGTH_LONG);
+                    toastShown = true;
+                } else if (mDeckIsEmpty) {
+                    if (mLevel == 4) {
+                        snoodsActivity.showToast("Congratulations!", Toast.LENGTH_LONG);
+                    } else {
+                        snoodsActivity.showToast("You Win! Enjoy next level!", Toast.LENGTH_LONG);
+                    }
+                    toastShown = true;
+                }
+            }
+
+            if (mDeckIsEmpty) {
+                dropAllColumns();
+                if (allColumnsEmpty()) {
+                    if (!mIsGameOver) {
+                        mIsWinAnimation = true;
+                    }
+                    SnoodsActivity.toDebug("Game End! Game Over: " + mIsGameOver);
+                    resetGame(mIsGameOver);
+                }
+            }
+        } else { // mIsWinAnimation == true
+            switch (mLevel) {
+                default: {
+                    if (x_anim_sprite % 100 == 0) {
+                        showBlinkLabel = !showBlinkLabel;
+                        SnoodsActivity.toDebug(x_anim_sprite + " " + showBlinkLabel);
+                    }
+                    x_anim_sprite += DROP_COLUMN_SPEED;
+                    if (x_anim_sprite > ORIGINAL_WIDTH + 200 + (145 * 6) + CARD_GAP) {
+                        mIsWinAnimation = false;
+                        x_anim_sprite = 0;
+                    }
+                    break;
+                }
+                case 4: {
+                    if (y_anim_sprite % 100 == 0) {
+                        showBlinkLabel = !showBlinkLabel;
+                    }
+                    y_anim_sprite += DROP_COLUMN_SPEED;
+                    if (y_anim_sprite > ORIGINAL_HEIGHT + 200 + (200 * 6) + CARD_GAP) {
+                        mIsWinAnimation = false;
+                        y_anim_sprite = 0;
+                    }
+                    break;
+                }
             }
         }
     }
@@ -638,6 +750,8 @@ public class SnoodsSurfaceView extends SurfaceView
         mIsDropingCard = false;
         mIsGrab = false;
         cardIndex = 6 + 13 + 13 * ((mLevel == 4) ? 3 : mLevel);
+
+        setSixRandomCardsForAnimations();
 
         stopTimer();
         mIsTimerRun = false;
