@@ -28,6 +28,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     public static final int DROP_CARD_SPEED = 15;
     public static final int DROP_COLUMN_SPEED = 10;
+
     public static final int CARD_GAP = 30;
 
     private Rect mOriginalScreenRect = null;
@@ -101,7 +102,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     public boolean mIsGameOver = false;
 
-    private SnoodsActivity snoodsActivity = null;
+    private SnoodsGameActivity snoodsGameActivity = null;
     private boolean toastShown = false;
 
     public float progressBarPercent = 0;
@@ -121,10 +122,10 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private int[] sixRandomCards = null;
 
-    public SnoodsSurfaceView(Context context, final SnoodsActivity snoodsActivity) {
+    public SnoodsSurfaceView(Context context, final SnoodsGameActivity snoodsGameActivity) {
         super(context);
 
-        this.snoodsActivity = snoodsActivity;
+        this.snoodsGameActivity = snoodsGameActivity;
         mContext = context;
 
         mRandom = new Random();
@@ -193,12 +194,12 @@ public class SnoodsSurfaceView extends SurfaceView
     private void createCountDownTimer(final long millisInFuture,
                                       final long countDownInterval) {
         final SnoodsSurfaceView snoodsSurfaceView = this;
-        snoodsActivity.runOnUiThread(new Runnable() {
+        snoodsGameActivity.runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
                 timer = new SnoodsGameTimer(millisInFuture, countDownInterval,
-                        snoodsSurfaceView, snoodsActivity);
+                        snoodsSurfaceView, snoodsGameActivity);
             }
         });
     }
@@ -208,7 +209,7 @@ public class SnoodsSurfaceView extends SurfaceView
             int x_off = (i > 16) ? (i - 17) * 145 : i * 145;
             int y_off = (i > 16) ? 200 : 0;
 
-            SnoodsActivity.toDebug("" + i + " " + x_off + " " + y_off);
+            SnoodsGameActivity.toDebug("" + i + " " + x_off + " " + y_off);
             cardBitmaps[i] = Bitmap.createBitmap(cardAllBitmap, x_off, y_off, 145, 200);
         }
     }
@@ -289,7 +290,7 @@ public class SnoodsSurfaceView extends SurfaceView
         for (int i = 0; i < cardIndex; ++i) {
             c += mDeck[i] + " ";
         }
-        SnoodsActivity.toDebug(c);
+        SnoodsGameActivity.toDebug(c);
 
         int _Change, _Tmp;
         for (int Num1 = 0; Num1 < cardIndex; Num1++) {
@@ -303,7 +304,7 @@ public class SnoodsSurfaceView extends SurfaceView
         for (int i = 0; i < cardIndex; ++i) {
             c += mDeck[i] + " ";
         }
-        SnoodsActivity.toDebug(c);
+        SnoodsGameActivity.toDebug(c);
     }
 
     public void setHighlightColumn(int column) {
@@ -429,7 +430,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 x_or_y = x_anim_sprite;
                 break;
             }
-            case 4: {
+            case 1: {
                 drawVerticalCardAnimation(canvas, paint);
                 x_or_y = y_anim_sprite;
                 break;
@@ -557,7 +558,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 columnScores[column] += 11;
             }
         } else {
-            SnoodsActivity.toDebug("Joker");
+            SnoodsGameActivity.toDebug("Joker");
             columnScores[column] = 21;
         }
     }
@@ -586,8 +587,8 @@ public class SnoodsSurfaceView extends SurfaceView
         highlightColumn = 0;
         columnOffsets[column] += DROP_COLUMN_SPEED;
         if (animateColumn) {
-            SnoodsActivity.toDebug("Once??????");
-            snoodsActivity.runOnUiThread(new Runnable() {
+            SnoodsGameActivity.toDebug("Once??????");
+            snoodsGameActivity.runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -634,11 +635,11 @@ public class SnoodsSurfaceView extends SurfaceView
     private void lockColumn(final int column) {
         if (!lockColumns[column]) {
             for (int i = 0; i < columnsDecks[column].size(); ++i) {
-                SnoodsActivity.toDebug("--------");
+                SnoodsGameActivity.toDebug("--------");
                 columnsDecks[column].set(i, cardBitmaps[16]);
             }
 
-            snoodsActivity.runOnUiThread(new Runnable() {
+            snoodsGameActivity.runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
@@ -683,13 +684,13 @@ public class SnoodsSurfaceView extends SurfaceView
 
             if (!toastShown) {
                 if (mIsGameOver) {
-                    snoodsActivity.showToast("Game over!", Toast.LENGTH_LONG);
+                    snoodsGameActivity.showToast("Game over!", Toast.LENGTH_LONG);
                     toastShown = true;
                 } else if (mDeckIsEmpty) {
                     if (mLevel == 4) {
-                        snoodsActivity.showToast("Congratulations!", Toast.LENGTH_LONG);
+                        snoodsGameActivity.showToast("Congratulations!", Toast.LENGTH_LONG);
                     } else {
-                        snoodsActivity.showToast("You Win! Enjoy next level!", Toast.LENGTH_LONG);
+                        snoodsGameActivity.showToast("You Win! Enjoy next level!", Toast.LENGTH_LONG);
                     }
                     toastShown = true;
                 }
@@ -701,7 +702,7 @@ public class SnoodsSurfaceView extends SurfaceView
                     if (!mIsGameOver) {
                         mIsWinAnimation = true;
                     }
-                    SnoodsActivity.toDebug("Game End! Game Over: " + mIsGameOver);
+                    SnoodsGameActivity.toDebug("Game End! Game Over: " + mIsGameOver);
                     resetGame(mIsGameOver);
                 }
             }
@@ -710,7 +711,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 default: {
                     if (x_anim_sprite % 100 == 0) {
                         showBlinkLabel = !showBlinkLabel;
-                        SnoodsActivity.toDebug(x_anim_sprite + " " + showBlinkLabel);
+                        SnoodsGameActivity.toDebug(x_anim_sprite + " " + showBlinkLabel);
                     }
                     x_anim_sprite += DROP_COLUMN_SPEED;
                     if (x_anim_sprite > ORIGINAL_WIDTH + 200 + (145 * 6) + CARD_GAP) {
@@ -719,7 +720,7 @@ public class SnoodsSurfaceView extends SurfaceView
                     }
                     break;
                 }
-                case 4: {
+                case 1: {
                     if (y_anim_sprite % 100 == 0) {
                         showBlinkLabel = !showBlinkLabel;
                     }
@@ -827,7 +828,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        SnoodsActivity.toDebug("Surface created.");
+        SnoodsGameActivity.toDebug("Surface created.");
         mScreenWidth = holder.getSurfaceFrame().width();
         mScreenHeight = holder.getSurfaceFrame().height();
 
@@ -838,7 +839,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        SnoodsActivity.toDebug("Surface changed: " +
+        SnoodsGameActivity.toDebug("Surface changed: " +
                 width + "x" + height + " | " +
                 mScreenWidth + "x" + mScreenHeight + ".");
     }
@@ -855,7 +856,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 }
                 shutdown = true;
             } catch (InterruptedException e) {
-                SnoodsActivity.toDebug("Error joining to Main Thread");
+                SnoodsGameActivity.toDebug("Error joining to Main Thread");
             }
         }
     }

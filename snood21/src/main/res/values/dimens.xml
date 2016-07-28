@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="layout_margin">10dp</dimen>
+    <dimen name="string_margin">8dp</dimen>
+    <dimen name="text_edit_margin">3dp</dimen>
+    <dimen name="text_size">20sp</dimen>
+    <dimen name="seek_margin">20dp</dimen>
+</resources>

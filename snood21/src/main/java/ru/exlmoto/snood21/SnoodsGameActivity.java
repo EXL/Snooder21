@@ -7,11 +7,11 @@ import android.view.MotionEvent;
 import android.view.Window;
 import android.widget.Toast;
 
-public class SnoodsActivity extends Activity {
+public class SnoodsGameActivity extends Activity {
 
     public static final String APP_DEBUG_TAG = "Snood21";
 
-    SnoodsSurfaceView mSnoodsSurfaceView = null;
+    private SnoodsSurfaceView mSnoodsSurfaceView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +80,7 @@ public class SnoodsActivity extends Activity {
     }
 
     public void showToast(final String text, final int delay) {
-        final SnoodsActivity activity = this;
+        final SnoodsGameActivity activity = this;
         activity.runOnUiThread(new Runnable() {
 
             public void run() {
