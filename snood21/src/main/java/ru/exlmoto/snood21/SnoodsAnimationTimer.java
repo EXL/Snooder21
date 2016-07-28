@@ -16,6 +16,8 @@ public class SnoodsAnimationTimer extends CountDownTimer {
 
     private boolean lock = false;
 
+    private boolean playSound = true;
+
     public SnoodsAnimationTimer(long millisInFuture,
                                 long countDownInterval,
                                 ArrayList<Bitmap>[] columnsDecks,
@@ -66,8 +68,25 @@ public class SnoodsAnimationTimer extends CountDownTimer {
         }
     }
 
+    public int getCountOfLockColumns() {
+        int lockedColumns = 0;
+        for (int i = 0; i < SnoodsSurfaceView.COLUMNS_COUNT; ++i) {
+            if (lockColumns[i]) {
+                lockedColumns++;
+            }
+        }
+        return lockedColumns;
+    }
+
     @Override
     public void onTick(long millisUntilFinished) {
+        if (lock) {
+            if (playSound && getCountOfLockColumns() < 3) {
+                SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_LOCK);
+                playSound = false;
+            }
+            SnoodsLauncherActivity.doVibrate(SnoodsLauncherActivity.VIBRATE_SHORT);
+        }
         if (firstFrame) {
             animateFirstFrame();
             firstFrame = false;

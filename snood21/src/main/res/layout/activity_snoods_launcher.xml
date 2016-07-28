@@ -23,9 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/layout_margin"
-            android:text="@string/run_snood_button">
-            <requestFocus/>
-        </Button>
+            android:text="@string/run_snood_button" />
 
         <TextView
             android:id="@+id/themeLabel"
@@ -38,7 +36,7 @@
             android:id="@+id/radioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/motoThemeRadioButton"

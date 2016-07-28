@@ -1,11 +1,14 @@
 package ru.exlmoto.snood21;
 
 import android.app.Activity;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.widget.Toast;
+
+import ru.exlmoto.snood21.SnoodsLauncherActivity.SnoodsSettings;
 
 public class SnoodsGameActivity extends Activity {
 
@@ -18,6 +21,10 @@ public class SnoodsGameActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        if (SnoodsSettings.sound) {
+            setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        }
 
         mSnoodsSurfaceView = new SnoodsSurfaceView(this, this);
         setContentView(mSnoodsSurfaceView);
@@ -69,6 +76,7 @@ public class SnoodsGameActivity extends Activity {
                 }
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL: {
+                    mSnoodsSurfaceView.mPlayingGrabSound = true;
                     if (mSnoodsSurfaceView.mIsGrab) {
                         mSnoodsSurfaceView.putCardToColumn(x_c, y_c);
                     }
@@ -84,7 +92,9 @@ public class SnoodsGameActivity extends Activity {
         activity.runOnUiThread(new Runnable() {
 
             public void run() {
-                Toast.makeText(activity, text, delay).show();
+                if (SnoodsSettings.showToasts) {
+                    Toast.makeText(activity, text, delay).show();
+                }
             }
         });
     }

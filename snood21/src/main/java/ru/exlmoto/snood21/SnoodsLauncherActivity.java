@@ -33,6 +33,8 @@ public class SnoodsLauncherActivity extends Activity {
     public static int SOUND_WIN;
     public static int SOUND_LOCK;
     public static int SOUND_GAME_OVER;
+    public static int SOUND_WHOOSH;
+    public static int SOUND_ERROR;
 
     public static class SnoodsSettings {
 
@@ -42,7 +44,7 @@ public class SnoodsLauncherActivity extends Activity {
         public static boolean showFps = false;
         public static boolean writeScores = true;
 
-        public static int animationSpeed = 3;
+        public static int animationSpeed = 2;
         public static int themeId = 0;
 
         // Scores Section
@@ -148,7 +150,7 @@ public class SnoodsLauncherActivity extends Activity {
 
         SnoodsSettings.playerName = settingStorage.getString("playerName", "Player");
 
-        SnoodsSettings.animationSpeed = settingStorage.getInt("animationSpeed", 3);
+        SnoodsSettings.animationSpeed = settingStorage.getInt("animationSpeed", 2);
 
         for (int i = 0; i < HIGH_SCORE_PLAYERS; ++i) {
             SnoodsSettings.playerNames[i] = settingStorage.getString("player" + i, SnoodsSettings.playerNames[i]);
@@ -318,14 +320,16 @@ public class SnoodsLauncherActivity extends Activity {
         fillLayoutBySettings();
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // TODO: 5?
         soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
 
-        // TODO: load sounds
-//        SOUND_GRAB = soundPool.load(this, R, 1);
-//        SOUND_DROP = soundPool.load(this, R, 1);
-//        SOUND_LOCK = soundPool.load(this, R, 1);
-//        SOUND_WIN = soundPool.load(this, R, 1);
-//        SOUND_GAME_OVER = soundPool.load(this, R, 1);
+        SOUND_GRAB = soundPool.load(this, R.raw.grab, 1);
+        SOUND_DROP = soundPool.load(this, R.raw.drop, 1);
+        SOUND_LOCK = soundPool.load(this, R.raw.lock, 1);
+        SOUND_WIN = soundPool.load(this, R.raw.game_win, 1);
+        SOUND_GAME_OVER = soundPool.load(this, R.raw.game_over, 1);
+        SOUND_WHOOSH = soundPool.load(this, R.raw.whoosh, 1);
+        SOUND_ERROR = soundPool.load(this, R.raw.error, 1);
 
         Button snood21RunButton = (Button) findViewById(R.id.runSnoodButton);
         snood21RunButton.setOnClickListener(new OnClickListener() {
