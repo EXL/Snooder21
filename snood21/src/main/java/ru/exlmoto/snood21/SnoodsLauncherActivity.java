@@ -68,7 +68,7 @@ public class SnoodsLauncherActivity extends Activity {
     private CheckBox showFpsCheckBox = null;
     private CheckBox writeHighScoresCheckBox = null;
 
-    private TextView playerNameTextView = null;
+    private TextView playerNameEditText = null;
 
     private SeekBar animationSpeedSeekBar = null;
     private TextView animationSpeedTextView = null;
@@ -76,7 +76,6 @@ public class SnoodsLauncherActivity extends Activity {
     private RadioButton motoRadioButton = null;
     private RadioButton paperRadioButton = null;
 
-    // TODO: Why Static?
     public static SharedPreferences settingStorage = null;
 
     private static TextView[] playerNamesView = null;
@@ -98,7 +97,7 @@ public class SnoodsLauncherActivity extends Activity {
             SnoodsSettings.themeId = THEME_PAPER;
         }
 
-        SnoodsSettings.playerName = playerNameTextView.getText().toString();
+        SnoodsSettings.playerName = playerNameEditText.getText().toString();
 
         SnoodsSettings.animationSpeed = animationSpeedSeekBar.getProgress();
     }
@@ -124,7 +123,7 @@ public class SnoodsLauncherActivity extends Activity {
             }
         }
 
-        playerNameTextView.setText(SnoodsSettings.playerName);
+        playerNameEditText.setText(SnoodsSettings.playerName);
 
         animationSpeedTextView.setText(String.format("%d", SnoodsSettings.animationSpeed + 1));
         animationSpeedSeekBar.setProgress(SnoodsSettings.animationSpeed);
@@ -187,7 +186,7 @@ public class SnoodsLauncherActivity extends Activity {
         showFpsCheckBox = (CheckBox) findViewById(R.id.checkBoxFps);
         writeHighScoresCheckBox = (CheckBox) findViewById(R.id.checkBoxWriteScores);
 
-        playerNameTextView = (TextView) findViewById(R.id.player_EditText);
+        playerNameEditText = (TextView) findViewById(R.id.player_EditText);
 
         animationSpeedTextView = (TextView) findViewById(R.id.animationValueView);
         animationSpeedSeekBar = (SeekBar) findViewById(R.id.animationBar);
@@ -306,7 +305,9 @@ public class SnoodsLauncherActivity extends Activity {
 
         settingStorage = getSharedPreferences("ru.exlmoto.snood21", MODE_PRIVATE);
         // Check the first run
+        boolean firstRun = false;
         if (settingStorage.getBoolean("firstRun", true)) {
+            firstRun = true;
             settingStorage.edit().putBoolean("firstRun", false).commit();
         } else {
             readSettings();
@@ -319,17 +320,21 @@ public class SnoodsLauncherActivity extends Activity {
 
         fillLayoutBySettings();
 
+        if (firstRun) {
+            playerNameEditText.setText(SnoodsScoreManager.generatePlayerName());
+        }
+
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         // TODO: 5?
         soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
 
-        SOUND_GRAB = soundPool.load(this, R.raw.grab, 1);
-        SOUND_DROP = soundPool.load(this, R.raw.drop, 1);
-        SOUND_LOCK = soundPool.load(this, R.raw.lock, 1);
-        SOUND_WIN = soundPool.load(this, R.raw.game_win, 1);
-        SOUND_GAME_OVER = soundPool.load(this, R.raw.game_over, 1);
-        SOUND_WHOOSH = soundPool.load(this, R.raw.whoosh, 1);
-        SOUND_ERROR = soundPool.load(this, R.raw.error, 1);
+        SOUND_GRAB = soundPool.load(this, R.raw.sfx_grab, 1);
+        SOUND_DROP = soundPool.load(this, R.raw.sfx_drop, 1);
+        SOUND_LOCK = soundPool.load(this, R.raw.sfx_lock, 1);
+        SOUND_WIN = soundPool.load(this, R.raw.sfx_game_win, 1);
+        SOUND_GAME_OVER = soundPool.load(this, R.raw.sfx_game_over, 1);
+        SOUND_WHOOSH = soundPool.load(this, R.raw.sfx_whoosh, 1);
+        SOUND_ERROR = soundPool.load(this, R.raw.sfx_error, 1);
 
         Button snood21RunButton = (Button) findViewById(R.id.runSnoodButton);
         snood21RunButton.setOnClickListener(new OnClickListener() {

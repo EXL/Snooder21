@@ -98,4 +98,10 @@ public class SnoodsGameActivity extends Activity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        mSnoodsSurfaceView.getSnoodsScoreManager().checkHighScore(mSnoodsSurfaceView.getScores());
+        super.onBackPressed();
+    }
 }

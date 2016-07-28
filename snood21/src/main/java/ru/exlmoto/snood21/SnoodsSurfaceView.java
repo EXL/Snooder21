@@ -135,6 +135,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private boolean mPlayingGameOverSound = true;
     private boolean mPlayingAlphaSound = true;
 
+    private SnoodsScoreManager snoodsScoreManager = null;
+
     public SnoodsSurfaceView(Context context, final SnoodsGameActivity snoodsGameActivity) {
         super(context);
 
@@ -193,6 +195,8 @@ public class SnoodsSurfaceView extends SurfaceView
         sixRandomCards = new int[6];
         setSixRandomCardsForAnimations();
 
+        snoodsScoreManager = new SnoodsScoreManager(SnoodsSettings.playerName, snoodsGameActivity);
+
         createCountDownTimer(60000 * 3, 1000);
 
         // Set screen always on
@@ -202,6 +206,14 @@ public class SnoodsSurfaceView extends SurfaceView
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
+    }
+
+    public int getScores() {
+        return scores;
+    }
+
+    public SnoodsScoreManager getSnoodsScoreManager() {
+        return snoodsScoreManager;
     }
 
     private void setSixRandomCardsForAnimations() {
@@ -427,10 +439,10 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void drawVerticalCardAnimation(Canvas canvas, Paint paint) {
         for (int i = 0; i < 6; ++i) {
-            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+            canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
                     x_anim_sprite_start,
                     y_anim_sprite + (200 + CARD_GAP) * i - (200 + CARD_GAP) * 6, paint);
-            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+            canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
                     ORIGINAL_WIDTH - x_anim_sprite_start - 145,
                     -y_anim_sprite + (200 + CARD_GAP) * i + ORIGINAL_HEIGHT, paint);
         }
@@ -438,10 +450,10 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void drawHorizontalCardAnimation(Canvas canvas, Paint paint) {
         for (int i = 0; i < 6; ++i) {
-            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+            canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
                     x_anim_sprite + (145 + CARD_GAP) * i - (145 + CARD_GAP) * 6,
                     y_anim_sprite_start, paint);
-            canvas.drawBitmap(cardBitmaps[sixRandomCards[i]],
+            canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
                     -x_anim_sprite + (145 + CARD_GAP) * i + ORIGINAL_WIDTH,
                     ORIGINAL_HEIGHT - y_anim_sprite_start - 200, paint);
         }
@@ -749,18 +761,18 @@ public class SnoodsSurfaceView extends SurfaceView
                     if (!mIsGameOver) {
                         mIsWinAnimation = true;
                         SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_WIN);
+                    } else {
+                        snoodsScoreManager.checkHighScore(scores);
                     }
                     SnoodsGameActivity.toDebug("Game End! Game Over: " + mIsGameOver);
                     resetGame(mIsGameOver);
                 }
             }
         } else { // mIsWinAnimation == true
-            // TODO: check animation
             switch (mLevel) {
                 default: {
                     if (x_anim_sprite % 100 == 0) {
                         showBlinkLabel = !showBlinkLabel;
-                        SnoodsGameActivity.toDebug(x_anim_sprite + " " + showBlinkLabel);
                     }
                     x_anim_sprite += drop_column_speed;
                     if (x_anim_sprite > ORIGINAL_WIDTH + 200 + (145 * 6) + CARD_GAP) {
