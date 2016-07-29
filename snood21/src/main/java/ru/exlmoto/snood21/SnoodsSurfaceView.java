@@ -133,7 +133,7 @@ public class SnoodsSurfaceView extends SurfaceView
     public boolean mPlayingGrabSound = true;
     public boolean mPlayingErrorSound = true;
     private boolean mPlayingGameOverSound = true;
-    private boolean mPlayingAlphaSound = true;
+    private boolean mPlayingWhooshSound = true;
 
     private SnoodsScoreManager snoodsScoreManager = null;
 
@@ -644,15 +644,15 @@ public class SnoodsSurfaceView extends SurfaceView
                 }
             });
         }
-        if (mPlayingAlphaSound) {
+        if (mPlayingWhooshSound) {
                 SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_WHOOSH);
             if (!mDeckIsEmpty) {
                 SnoodsLauncherActivity.doVibrate(SnoodsLauncherActivity.VIBRATE_SHORT);
             }
-            mPlayingAlphaSound = false;
+            mPlayingWhooshSound = false;
         }
         if (columnOffsets[column] > ORIGINAL_HEIGHT) {
-            mPlayingAlphaSound = true;
+            mPlayingWhooshSound = true;
             mIsDropingColumn = false;
             animateColumn = true;
             if (!all) {
