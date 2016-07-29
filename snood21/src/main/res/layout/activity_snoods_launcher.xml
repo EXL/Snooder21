@@ -206,170 +206,17 @@
             <TableRow android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/player_Name1"
+                    android:id="@+id/player_Names"
                     android:layout_height="wrap_content"
-                    android:text="@string/player_1"
+                    android:text="@string/players_list"
                     android:textSize="@dimen/text_size" />
 
                 <TextView
-                    android:id="@+id/player_Score1"
+                    android:id="@+id/player_Scores"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:text="@string/score_1"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name2"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_2"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score2"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_2"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name3"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_3"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score3"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_3"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name4"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_4"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score4"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_4"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name5"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_5"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score5"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_5"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name6"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_6"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score6"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_6"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name7"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_7"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score7"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_7"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name8"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_8"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score8"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_8"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name9"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_9"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score9"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_9"
-                    android:textSize="@dimen/text_size" />
-            </TableRow>
-
-            <TableRow android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/player_Name10"
-                    android:layout_height="wrap_content"
-                    android:text="@string/player_10"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:id="@+id/player_Score10"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/score_10"
+                    android:text="@string/scores_list"
                     android:textSize="@dimen/text_size" />
             </TableRow>
         </TableLayout>

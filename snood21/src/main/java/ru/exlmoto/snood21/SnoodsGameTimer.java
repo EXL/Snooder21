@@ -39,6 +39,7 @@ public class SnoodsGameTimer extends CountDownTimer {
             snoodsSurfaceView.secs = 0;
             snoodsSurfaceView.progressBarPercent = 0;
             snoodsGameActivity.showToast("Time is over!", Toast.LENGTH_SHORT);
+            SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_GAME_OVER);
             snoodsSurfaceView.mDeckIsEmpty = true;
             snoodsSurfaceView.mIsGameOver = true;
             this.cancel();
