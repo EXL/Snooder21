@@ -373,7 +373,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void paintProgressBar(Canvas canvas, Paint paint) {
         paint.setColor(Color.parseColor("#CF5B56"));
-        canvas.drawRect(0, 0, progressBarPercent, 54, paint);
+        canvas.drawRect(8, 5, 8 + progressBarPercent, 51, paint);
         paint.reset();
     }
 
@@ -687,21 +687,22 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
-    private void lockColumn(final int column) {
+    public void lockColumn(final int column, boolean anim) {
         if (!lockColumns[column]) {
             for (int i = 0; i < columnsDecks[column].size(); ++i) {
                 SnoodsGameActivity.toDebug("--------");
                 columnsDecks[column].set(i, cardBitmaps[16]);
             }
+            if (anim) {
+                snoodsGameActivity.runOnUiThread(new Runnable() {
 
-            snoodsGameActivity.runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    new SnoodsAnimationTimer(1000, 250, columnsDecks,
-                            columnsDecksValue, lockColumns, column, cardBitmaps, true).start();
-                }
-            });
+                    @Override
+                    public void run() {
+                        new SnoodsAnimationTimer(1000, 250, columnsDecks,
+                                columnsDecksValue, lockColumns, column, cardBitmaps, true).start();
+                    }
+                });
+            }
             lockColumns[column] = true;
         }
     }
@@ -720,7 +721,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 }
 
                 if (columnScores[i] > 21) {
-                    lockColumn(i);
+                    lockColumn(i, true);
                 }
 
                 if (columnScores[i] == 21) {

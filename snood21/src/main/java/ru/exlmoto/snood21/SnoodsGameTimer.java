@@ -19,7 +19,7 @@ public class SnoodsGameTimer extends CountDownTimer {
         this.snoodsSurfaceView = snoodsSurfaceView;
         this.snoodsGameActivity = snoodsGameActivity;
 
-        dec = 361.0f / (millisInFuture / 1000.0f);
+        dec = 353.0f / (millisInFuture / 1000.0f);
     }
 
     @Override
@@ -36,6 +36,9 @@ public class SnoodsGameTimer extends CountDownTimer {
     @Override
     public void onFinish() {
         if (!snoodsSurfaceView.mDeckIsEmpty) {
+            for (int i = 0; i < snoodsSurfaceView.COLUMNS_COUNT; ++i) {
+                snoodsSurfaceView.lockColumn(i, false);
+            }
             snoodsSurfaceView.secs = 0;
             snoodsSurfaceView.progressBarPercent = 0;
             snoodsGameActivity.showToast("Time is over!", Toast.LENGTH_SHORT);
