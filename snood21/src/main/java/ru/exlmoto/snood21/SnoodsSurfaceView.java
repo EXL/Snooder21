@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
@@ -177,9 +178,12 @@ public class SnoodsSurfaceView extends SurfaceView
         mChars = new Bitmap[CHARS_NUM];
         fillDigitsBitmap();
 
+        mTextAllBitmap.recycle();
+
         columnRects = new Rect[COLUMNS_COUNT];
         cardBitmaps = new Bitmap[CARD_BITMAPS_COUNT];
         fillDecksBitmap();
+        cardAllBitmap.recycle();
 
         columnsDecks = new ArrayList[COLUMNS_COUNT];
         columnsDecksValue = new ArrayList[COLUMNS_COUNT];
@@ -229,6 +233,37 @@ public class SnoodsSurfaceView extends SurfaceView
         timer = null;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_Q:
+            case KeyEvent.KEYCODE_1: {
+                putCardToColumn(1);
+                break;
+            }
+            case KeyEvent.KEYCODE_W:
+            case KeyEvent.KEYCODE_2: {
+                putCardToColumn(2);
+                break;
+            }
+            case KeyEvent.KEYCODE_E:
+            case KeyEvent.KEYCODE_3: {
+                putCardToColumn(3);
+                break;
+            }
+            case KeyEvent.KEYCODE_R:
+            case KeyEvent.KEYCODE_4: {
+                putCardToColumn(4);
+                break;
+            }
+            default: {
+                highlightColumn = 0;
+                break;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     private void createCountDownTimer(final long millisInFuture,
                                       final long countDownInterval) {
         final SnoodsSurfaceView snoodsSurfaceView = this;
@@ -246,8 +281,7 @@ public class SnoodsSurfaceView extends SurfaceView
         for (int i = 0; i < CARD_BITMAPS_COUNT; ++i) {
             int x_off = (i > 16) ? (i - 17) * 145 : i * 145;
             int y_off = (i > 16) ? 200 : 0;
-
-            SnoodsGameActivity.toDebug("" + i + " " + x_off + " " + y_off);
+            // SnoodsGameActivity.toDebug("" + i + " " + x_off + " " + y_off);
             cardBitmaps[i] = Bitmap.createBitmap(cardAllBitmap, x_off, y_off, 145, 200);
         }
     }
@@ -328,20 +362,22 @@ public class SnoodsSurfaceView extends SurfaceView
         for (int i = 0; i < cardIndex; ++i) {
             c += mDeck[i] + " ";
         }
+
         SnoodsGameActivity.toDebug(c);
 
-        int _Change, _Tmp;
-        for (int Num1 = 0; Num1 < cardIndex; Num1++) {
-            _Change = mRandom.nextInt(cardIndex);
-            _Tmp = mDeck[Num1];
-            mDeck[Num1] = mDeck[_Change];
-            mDeck[_Change] = _Tmp;
+        int changeCard, tempCard;
+        for (int r = 0; r < cardIndex; r++) {
+            changeCard = mRandom.nextInt(cardIndex);
+            tempCard = mDeck[r];
+            mDeck[r] = mDeck[changeCard];
+            mDeck[changeCard] = tempCard;
         }
 
         c = "";
         for (int i = 0; i < cardIndex; ++i) {
             c += mDeck[i] + " ";
         }
+
         SnoodsGameActivity.toDebug(c);
     }
 
@@ -428,7 +464,9 @@ public class SnoodsSurfaceView extends SurfaceView
 
                 // Draw FPS
                 if (SnoodsSettings.showFps) {
-                    paintNumber(mBitmapCanvas, mMainPaint, getTimesPerSecond(), 9, 340, false, false);
+                    mMainPaint.setColor(Color.WHITE);
+                    mBitmapCanvas.drawText(getTimesPerSecond() + " fps", 70, 450, mMainPaint);
+                    mMainPaint.reset();
                 }
             } else {
                 paintWinAnimation(mBitmapCanvas, mMainPaint);
@@ -520,6 +558,17 @@ public class SnoodsSurfaceView extends SurfaceView
         if (mIsGrab && mPlayingGrabSound) {
             SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_GRAB);
             mPlayingGrabSound = false;
+        }
+    }
+
+    public void putCardToColumn(int column) {
+        if (!mIsDropingCard &&
+                !mDeckIsEmpty &&
+                !mIsDropingColumn &&
+                !mIsWinAnimation) {
+            highlightColumn = column;
+            putCardToColumn(columnRects[column - 1].centerX() - 145 / 2,
+                    columnRects[column - 1].centerY() - 200 / 2);
         }
     }
 
@@ -650,7 +699,7 @@ public class SnoodsSurfaceView extends SurfaceView
             });
         }
         if (mPlayingWhooshSound) {
-                SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_WHOOSH);
+            SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_WHOOSH);
             if (!mDeckIsEmpty) {
                 SnoodsLauncherActivity.doVibrate(SnoodsLauncherActivity.VIBRATE_SHORT);
             }
@@ -696,7 +745,7 @@ public class SnoodsSurfaceView extends SurfaceView
     public void lockColumn(final int column, boolean anim) {
         if (!lockColumns[column]) {
             for (int i = 0; i < columnsDecks[column].size(); ++i) {
-                SnoodsGameActivity.toDebug("--------");
+                // SnoodsGameActivity.toDebug("--------");
                 columnsDecks[column].set(i, cardBitmaps[16]);
             }
             if (anim) {
@@ -750,13 +799,16 @@ public class SnoodsSurfaceView extends SurfaceView
 
             if (!toastShown) {
                 if (mIsGameOver) {
-                    snoodsGameActivity.showToast("Game over!", Toast.LENGTH_LONG);
+                    snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_game_over).toString(),
+                            Toast.LENGTH_LONG);
                     toastShown = true;
                 } else if (mDeckIsEmpty) {
                     if (mLevel == 4) {
-                        snoodsGameActivity.showToast("Congratulations!", Toast.LENGTH_LONG);
+                        snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_congrats).toString(),
+                                Toast.LENGTH_LONG);
                     } else {
-                        snoodsGameActivity.showToast("You Win! Enjoy next level!", Toast.LENGTH_LONG);
+                        snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_next_level).toString(),
+                                Toast.LENGTH_LONG);
                     }
                     toastShown = true;
                 }

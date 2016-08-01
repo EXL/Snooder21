@@ -20,11 +20,19 @@
     <string name="scores_list">0</string>
     <string name="animation_label">Animation Speed:</string>
     <string name="version">v1.0</string>
-    <string name="about_string">This is remake</string>
     <string name="ok">OK</string>
-    <string name="help_string">This is help text</string>
     <string name="icon_desc">Icon Snooder 21</string>
     <string name="theme_label">Theme</string>
     <string name="theme_moto">Moto</string>
     <string name="theme_paper">Paper</string>
+    <string name="toast_time_up">Time up!</string>
+    <string name="toast_hurry_up">Hurry up!</string>
+    <string name="toast_game_over">Game over!</string>
+    <string name="toast_congrats">Congratulations!</string>
+    <string name="toast_next_level">You Win! Enjoy the next level!</string>
+    <string name="toast_high_score_ch1">You get:</string>
+    <string name="toast_high_score_ch2">scores!</string>
+    <string name="toast_high_score_ch3">Writing score…</string>
+    <string name="help_string">Use touchscreen and drag and drop to place game card on the corresponding column. Also you can just using touches on the columns and physical keyboard 1, 2, 3, 4 keys.\n\nThe object is to use all the cards by making combinations of 21 on any of the 4 column. If you succeed, you WIN the next level. The deck is NOT standard: suits are replaced by Snooders.\n\nEasy level is 32 cards. Medium level is 45 cards. Both Hard and Evil levels are 58 cards. The deck on each level includes 6 wild cards. A WILD card can be placed on any column for an automatic 21. If 5 cards on one column total less than 21, you are awarded the 21. An ACE is worth 1 or 11. J, Q, K are all worth 10.\n\nWhen a 21 is made, the column is cleared and can be used to build another 21. If a column total is greater then 21, the column is frozen. You MUST play a card until the deck is used, OR all columns are frozen, OR time runs out.\n\nThe value of making a 21 is worth more from left to right (100-400 points).\n\nYou also get additional 50 points for each card placed in a column. When out of cards, you get 200 bonus points for every card on the screen.\n\nThe game ends when time runs out (there are 3 and less minutes) or all 4 columns are frozen. In the fourth Evil level, you win the game when all the deck cards are used.</string>
+    <string name="about_string">This game is my remake of Motorola\'s standard game: Snood™ 21. Game uses drawing via SurfaceView Canvas.\n• © 2016 S. \"EXL\" KLS\nemail: exl@bk.ru\nemail: exlmotodev@gmail.com\n\nSource Code:\nhttp://github.com/EXL/Snooder21\n\nArticle About Snooder 21:\nhttp://exlmoto.ru/snooder21-droid\n\nThanks to:\n• Danil Medvedev for idea and support;\n• Nikita Prokopchik for cool photos;\n• Zorge.R for hosting, patience and help.\n\nOriginal idea:\n• © 1996-2002 David M. Dobson and/or Snood, LLC.</string>
 </resources>

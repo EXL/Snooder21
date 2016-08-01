@@ -28,7 +28,8 @@ public class SnoodsGameTimer extends CountDownTimer {
             snoodsSurfaceView.progressBarPercent += dec;
             snoodsSurfaceView.secs = (int) millisUntilFinished / 1000;
             if (snoodsSurfaceView.secs == 20) {
-                snoodsGameActivity.showToast("Hurry up!", Toast.LENGTH_SHORT);
+                snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_hurry_up).toString(),
+                        Toast.LENGTH_SHORT);
             }
         }
     }
@@ -41,7 +42,8 @@ public class SnoodsGameTimer extends CountDownTimer {
             }
             snoodsSurfaceView.secs = 0;
             snoodsSurfaceView.progressBarPercent = 0;
-            snoodsGameActivity.showToast("Time is over!", Toast.LENGTH_SHORT);
+            snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_time_up).toString(),
+                    Toast.LENGTH_SHORT);
             SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_GAME_OVER);
             snoodsSurfaceView.mDeckIsEmpty = true;
             snoodsSurfaceView.mIsGameOver = true;

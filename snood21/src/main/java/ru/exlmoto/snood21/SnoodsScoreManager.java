@@ -91,10 +91,14 @@ public class SnoodsScoreManager {
         if (i == -1) {
             return i;
         }
+        String answer = snoodsGameActivity.getResources().getText(R.string.toast_high_score_ch1).toString() + " ";
+        answer += highScore + " ";
+        answer += snoodsGameActivity.getResources().getText(R.string.toast_high_score_ch2).toString();
         if (SnoodsSettings.writeScores) {
-            snoodsGameActivity.showToast("Write High Scores!", Toast.LENGTH_SHORT);
+            answer +=  " " + snoodsGameActivity.getResources().getText(R.string.toast_high_score_ch3).toString();
             insertScore(playerName, highScore, i);
         }
+        snoodsGameActivity.showToast(answer, Toast.LENGTH_SHORT);
         return i;
     }
 }
