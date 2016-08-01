@@ -472,7 +472,9 @@ public class SnoodsSurfaceView extends SurfaceView
                 paintWinAnimation(mBitmapCanvas, mMainPaint);
             }
 
-            mMainPaint.setFilterBitmap(true);
+            if (SnoodsSettings.antialiasing) {
+                mMainPaint.setFilterBitmap(true);
+            }
             canvas.drawBitmap(mGameBitmap, mOriginalScreenRect, mOutputScreenRect, mMainPaint);
         }
     }

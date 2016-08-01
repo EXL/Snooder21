@@ -93,6 +93,12 @@
                 android:text="@string/fps_check" />
         </TableRow>
 
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/antialiasing_check"
+            android:id="@+id/checkBoxAntialiasing" />
+
         <TextView
             android:id="@+id/nameSmallLabel"
             android:layout_width="wrap_content"

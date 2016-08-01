@@ -43,6 +43,7 @@ public class SnoodsLauncherActivity extends Activity {
         public static boolean showToasts = true;
         public static boolean showFps = false;
         public static boolean writeScores = true;
+        public static boolean antialiasing = true;
 
         public static int animationSpeed = 2;
         public static int themeId = 0;
@@ -67,6 +68,7 @@ public class SnoodsLauncherActivity extends Activity {
     private CheckBox showToastCheckBox = null;
     private CheckBox showFpsCheckBox = null;
     private CheckBox writeHighScoresCheckBox = null;
+    private CheckBox antialiasingCheckBox = null;
 
     private TextView playerNameEditText = null;
 
@@ -90,6 +92,7 @@ public class SnoodsLauncherActivity extends Activity {
         SnoodsSettings.showToasts = showToastCheckBox.isChecked();
         SnoodsSettings.showFps = showFpsCheckBox.isChecked();
         SnoodsSettings.writeScores = writeHighScoresCheckBox.isChecked();
+        SnoodsSettings.antialiasing = antialiasingCheckBox.isChecked();
 
 //        if (motoRadioButton.isChecked()) {
 //            SnoodsSettings.themeId = THEME_MOTO;
@@ -108,6 +111,7 @@ public class SnoodsLauncherActivity extends Activity {
         showToastCheckBox.setChecked(SnoodsSettings.showToasts);
         showFpsCheckBox.setChecked(SnoodsSettings.showFps);
         writeHighScoresCheckBox.setChecked(SnoodsSettings.writeScores);
+        antialiasingCheckBox.setChecked(SnoodsSettings.antialiasing);
 
 //        switch (SnoodsSettings.themeId) {
 //            case THEME_MOTO: {
@@ -152,6 +156,7 @@ public class SnoodsLauncherActivity extends Activity {
         SnoodsSettings.showToasts = settingStorage.getBoolean("showToasts", true);
         SnoodsSettings.showFps = settingStorage.getBoolean("showFps", false);
         SnoodsSettings.writeScores = settingStorage.getBoolean("writeScores", true);
+        SnoodsSettings.antialiasing = settingStorage.getBoolean("antialiasing", true);
 
         SnoodsSettings.themeId = settingStorage.getInt("themeId", THEME_MOTO);
 
@@ -177,6 +182,7 @@ public class SnoodsLauncherActivity extends Activity {
         editor.putBoolean("showToasts", SnoodsSettings.showToasts);
         editor.putBoolean("showFps", SnoodsSettings.showFps);
         editor.putBoolean("writeScores", SnoodsSettings.writeScores);
+        editor.putBoolean("antialiasing", SnoodsSettings.antialiasing);
 
         editor.putInt("themeId", SnoodsSettings.themeId);
 
@@ -193,6 +199,7 @@ public class SnoodsLauncherActivity extends Activity {
         showToastCheckBox = (CheckBox) findViewById(R.id.checkBoxToasts);
         showFpsCheckBox = (CheckBox) findViewById(R.id.checkBoxFps);
         writeHighScoresCheckBox = (CheckBox) findViewById(R.id.checkBoxWriteScores);
+        antialiasingCheckBox = (CheckBox) findViewById(R.id.checkBoxAntialiasing);
 
         playerNameEditText = (TextView) findViewById(R.id.player_EditText);
 
