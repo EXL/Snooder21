@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
+//import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -73,8 +73,8 @@ public class SnoodsLauncherActivity extends Activity {
     private SeekBar animationSpeedSeekBar = null;
     private TextView animationSpeedTextView = null;
 
-    private RadioButton motoRadioButton = null;
-    private RadioButton paperRadioButton = null;
+//    private RadioButton motoRadioButton = null;
+//    private RadioButton paperRadioButton = null;
 
     public static SharedPreferences settingStorage = null;
 
@@ -91,11 +91,11 @@ public class SnoodsLauncherActivity extends Activity {
         SnoodsSettings.showFps = showFpsCheckBox.isChecked();
         SnoodsSettings.writeScores = writeHighScoresCheckBox.isChecked();
 
-        if (motoRadioButton.isChecked()) {
-            SnoodsSettings.themeId = THEME_MOTO;
-        } else if (paperRadioButton.isChecked()) {
-            SnoodsSettings.themeId = THEME_PAPER;
-        }
+//        if (motoRadioButton.isChecked()) {
+//            SnoodsSettings.themeId = THEME_MOTO;
+//        } else if (paperRadioButton.isChecked()) {
+//            SnoodsSettings.themeId = THEME_PAPER;
+//        }
 
         SnoodsSettings.playerName = playerNameEditText.getText().toString();
 
@@ -109,19 +109,19 @@ public class SnoodsLauncherActivity extends Activity {
         showFpsCheckBox.setChecked(SnoodsSettings.showFps);
         writeHighScoresCheckBox.setChecked(SnoodsSettings.writeScores);
 
-        switch (SnoodsSettings.themeId) {
-            case THEME_MOTO: {
-                motoRadioButton.setChecked(true);
-                break;
-            }
-            case THEME_PAPER: {
-                paperRadioButton.setChecked(true);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
+//        switch (SnoodsSettings.themeId) {
+//            case THEME_MOTO: {
+//                motoRadioButton.setChecked(true);
+//                break;
+//            }
+//            case THEME_PAPER: {
+//                paperRadioButton.setChecked(true);
+//                break;
+//            }
+//            default: {
+//                break;
+//            }
+//        }
 
         playerNameEditText.setText(SnoodsSettings.playerName);
 
@@ -199,8 +199,8 @@ public class SnoodsLauncherActivity extends Activity {
         animationSpeedTextView = (TextView) findViewById(R.id.animationValueView);
         animationSpeedSeekBar = (SeekBar) findViewById(R.id.animationBar);
 
-        motoRadioButton = (RadioButton) findViewById(R.id.motoThemeRadioButton);
-        paperRadioButton = (RadioButton) findViewById(R.id.paperThemeRadioButton);
+//        motoRadioButton = (RadioButton) findViewById(R.id.motoThemeRadioButton);
+//        paperRadioButton = (RadioButton) findViewById(R.id.paperThemeRadioButton);
 
         playerNamesView = (TextView) findViewById(R.id.player_Names);
         playerScoresView = (TextView) findViewById(R.id.player_Scores);

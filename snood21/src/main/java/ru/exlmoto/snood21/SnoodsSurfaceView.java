@@ -66,6 +66,7 @@ public class SnoodsSurfaceView extends SurfaceView
     private Context mContext = null;
 
     private Bitmap mCurrentCardBitmap = null;
+    private Bitmap mCurrentCardBitmapToDeck = null;
     private Bitmap mBackGroundBitmap = null;
 
     private Bitmap mTextAllBitmap = null;
@@ -105,6 +106,7 @@ public class SnoodsSurfaceView extends SurfaceView
     public int secs = 60 * 3;
 
     public boolean mIsDropingColumn = false;
+    private boolean columnDropped = false;
     public boolean[] lockColumns = null;
     private int[] columnScores = null;
 
@@ -613,6 +615,7 @@ public class SnoodsSurfaceView extends SurfaceView
         cardIndex--;
         if (cardIndex > 0) {
             mCurrentCardBitmap = cardBitmaps[mDeck[cardIndex - 1]];
+            mCurrentCardBitmapToDeck = cardBitmaps[mDeck[cardIndex - 1] + 17];
             if (cardIndex > 1) {
                 mNextCardBitmap = cardBitmaps[mDeck[cardIndex - 2]];
             }
@@ -624,12 +627,14 @@ public class SnoodsSurfaceView extends SurfaceView
     }
 
     private void addCardToColumn(int column) {
+        columnDropped = false;
         SnoodsLauncherActivity.playSound(SnoodsLauncherActivity.SOUND_DROP);
         refreshScores(column);
-        columnsDecks[column].add(mCurrentCardBitmap);
+        columnsDecks[column].add(mCurrentCardBitmapToDeck);
     }
 
     private void dropColumn(final int column, boolean all) {
+        columnDropped = true;
         mIsDropingColumn = true;
         highlightColumn = 0;
         columnOffsets[column] += drop_column_speed;
@@ -654,6 +659,7 @@ public class SnoodsSurfaceView extends SurfaceView
         if (columnOffsets[column] > ORIGINAL_HEIGHT) {
             mPlayingWhooshSound = true;
             mIsDropingColumn = false;
+            columnDropped = false;
             animateColumn = true;
             if (!all) {
                 scores += 100 * (column + 1);
@@ -757,7 +763,10 @@ public class SnoodsSurfaceView extends SurfaceView
             }
 
             if (mDeckIsEmpty) {
-                dropAllColumns();
+                if (!columnDropped) {
+                    dropAllColumns();
+                    columnDropped = false;
+                }
                 if (allColumnsEmpty()) {
                     if (!mIsGameOver) {
                         mIsWinAnimation = true;
@@ -857,6 +866,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void resetDeckCards() {
         mCurrentCardBitmap = cardBitmaps[mDeck[cardIndex - 1]];
+        mCurrentCardBitmapToDeck = cardBitmaps[mDeck[cardIndex - 1] + 17];
         mNextCardBitmap = cardBitmaps[mDeck[cardIndex - 2]];
     }
 

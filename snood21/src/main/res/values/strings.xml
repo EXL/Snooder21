@@ -1,13 +1,13 @@
 <resources>
-    <string name="app_name">Snood 21</string>
-    <string name="run_snood_button">Run Snood 21!</string>
+    <string name="app_name">Snooder 21</string>
+    <string name="run_snood_button">Run Snooder 21!</string>
     <string name="settings_label">Settings</string>
     <string name="vibration_check">Vibration Haptics</string>
     <string name="sound_check">Sound</string>
     <string name="toasts_check">Show Toasts</string>
     <string name="fps_check">Show FPS</string>
     <string name="scores_check">Write High Scores to Table</string>
-    <string name="cover_desc">Snood 21 Cover Image</string>
+    <string name="cover_desc">Snooder 21 Cover Image</string>
     <string name="name_text">Please enter your name:</string>
     <string name="hint_text_edit">Enter your name</string>
     <string name="player_text_edit">Player</string>
@@ -23,7 +23,7 @@
     <string name="about_string">This is remake</string>
     <string name="ok">OK</string>
     <string name="help_string">This is help text</string>
-    <string name="icon_desc">Icon Snood 21</string>
+    <string name="icon_desc">Icon Snooder 21</string>
     <string name="theme_label">Theme</string>
     <string name="theme_moto">Moto</string>
     <string name="theme_paper">Paper</string>

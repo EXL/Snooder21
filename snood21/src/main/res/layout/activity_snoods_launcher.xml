@@ -25,7 +25,7 @@
             android:layout_marginBottom="@dimen/layout_margin"
             android:text="@string/run_snood_button" />
 
-        <TextView
+        <!--TextView
             android:id="@+id/themeLabel"
             style="?android:attr/listSeparatorTextViewStyle"
             android:layout_width="match_parent"
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/theme_paper" />
-        </RadioGroup>
+        </RadioGroup-->
 
         <TextView
             android:id="@+id/settingsLabel"
