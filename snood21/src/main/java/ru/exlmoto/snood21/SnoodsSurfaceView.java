@@ -806,8 +806,14 @@ public class SnoodsSurfaceView extends SurfaceView
                     toastShown = true;
                 } else if (mDeckIsEmpty) {
                     if (mLevel == 4) {
-                        snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_congrats).toString(),
-                                Toast.LENGTH_LONG);
+                        if (getCountOfLockColumns() == 0) {
+                            snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_congrats).toString(),
+                                    Toast.LENGTH_LONG);
+                        } else {
+                            snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_game_over).toString(),
+                                    Toast.LENGTH_LONG);
+                            mIsGameOver = true;
+                        }
                     } else {
                         snoodsGameActivity.showToast(snoodsGameActivity.getResources().getText(R.string.toast_next_level).toString(),
                                 Toast.LENGTH_LONG);
@@ -858,6 +864,16 @@ public class SnoodsSurfaceView extends SurfaceView
                 }
             }
         }
+    }
+
+    public int getCountOfLockColumns() {
+        int lockedColumns = 0;
+        for (int i = 0; i < SnoodsSurfaceView.COLUMNS_COUNT; ++i) {
+            if (lockColumns[i]) {
+                lockedColumns++;
+            }
+        }
+        return lockedColumns;
     }
 
     private void resetGame(boolean gameOver) {
