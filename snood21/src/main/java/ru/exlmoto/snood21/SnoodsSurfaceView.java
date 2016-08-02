@@ -979,6 +979,15 @@ public class SnoodsSurfaceView extends SurfaceView
         start();
     }
 
+    private void clearColumns() {
+        for (int i = 0; i < COLUMNS_COUNT; ++i) {
+            columnsDecks[i].clear();
+            columnsDecksValue[i].clear();
+            lockColumns[i] = false;
+            columnScores[i] = 0;
+        }
+    }
+
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         SnoodsGameActivity.toDebug("Surface changed: " +
@@ -988,7 +997,9 @@ public class SnoodsSurfaceView extends SurfaceView
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        timer.cancel();
+        SnoodsGameActivity.toDebug("Surface destroyed.");
+        resetGame(true);
+        clearColumns();
         boolean shutdown = false;
         mIsRunning = false;
         while (!shutdown) {
