@@ -23,6 +23,9 @@ public class SnoodsSurfaceView extends SurfaceView
     public static final int ORIGINAL_WIDTH = 800;
     public static final int ORIGINAL_HEIGHT = 480;
 
+    public static final int CARD_WIDTH = 145;
+    public static final int CARD_HEIGHT = 200;
+
     private static final int CARD_BITMAPS_COUNT = 17 * 2;
     public static final int COLUMNS_COUNT = 4;
 
@@ -64,8 +67,6 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private SurfaceHolder mSurfaceHolder = null;
 
-    private Context mContext = null;
-
     private Bitmap mCurrentCardBitmap = null;
     private Bitmap mCurrentCardBitmapToDeck = null;
     private Bitmap mBackGroundBitmap = null;
@@ -74,7 +75,6 @@ public class SnoodsSurfaceView extends SurfaceView
     private Bitmap[] mLabels = null;
     private Bitmap[] mChars = null;
 
-    private Rect cardRect = null;
     private Rect[] columnRects = null;
     private int highlightColumn = 0;
 
@@ -125,8 +125,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private Bitmap backGroundWinBitmap = null;
     public boolean mIsWinAnimation = false;
 
-    private int x_anim_sprite_start = 145;
-    private int y_anim_sprite_start = 200 / 6;
+    private int x_anim_sprite_start = CARD_WIDTH;
+    private int y_anim_sprite_start = CARD_HEIGHT / 6;
     private int x_anim_sprite = 0;
     private int y_anim_sprite = 0;
     private boolean showBlinkLabel = false;
@@ -144,7 +144,6 @@ public class SnoodsSurfaceView extends SurfaceView
         super(context);
 
         this.snoodsGameActivity = snoodsGameActivity;
-        mContext = context;
 
         mRandom = new Random();
 
@@ -164,10 +163,10 @@ public class SnoodsSurfaceView extends SurfaceView
             default:
             case SnoodsLauncherActivity.THEME_PAPER: // TODO: Remove this
             case SnoodsLauncherActivity.THEME_MOTO: {
-                mBackGroundBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.bkg_moto);
-                backGroundWinBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.win_moto);
-                mTextAllBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.text_moto);
-                cardAllBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.deck_moto);
+                mBackGroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.bkg_moto);
+                backGroundWinBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.win_moto);
+                mTextAllBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.text_moto);
+                cardAllBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.deck_moto);
                 break;
             }
         }
@@ -279,10 +278,10 @@ public class SnoodsSurfaceView extends SurfaceView
 
     private void fillDecksBitmap() {
         for (int i = 0; i < CARD_BITMAPS_COUNT; ++i) {
-            int x_off = (i > 16) ? (i - 17) * 145 : i * 145;
-            int y_off = (i > 16) ? 200 : 0;
+            int x_off = (i > 16) ? (i - 17) * CARD_WIDTH : i * CARD_WIDTH;
+            int y_off = (i > 16) ? CARD_HEIGHT : 0;
             // SnoodsGameActivity.toDebug("" + i + " " + x_off + " " + y_off);
-            cardBitmaps[i] = Bitmap.createBitmap(cardAllBitmap, x_off, y_off, 145, 200);
+            cardBitmaps[i] = Bitmap.createBitmap(cardAllBitmap, x_off, y_off, CARD_WIDTH, CARD_HEIGHT);
         }
     }
 
@@ -483,21 +482,21 @@ public class SnoodsSurfaceView extends SurfaceView
         for (int i = 0; i < 6; ++i) {
             canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
                     x_anim_sprite_start,
-                    y_anim_sprite + (200 + CARD_GAP) * i - (200 + CARD_GAP) * 6, paint);
+                    y_anim_sprite + (CARD_HEIGHT + CARD_GAP) * i - (CARD_HEIGHT + CARD_GAP) * 6, paint);
             canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
-                    ORIGINAL_WIDTH - x_anim_sprite_start - 145,
-                    -y_anim_sprite + (200 + CARD_GAP) * i + ORIGINAL_HEIGHT, paint);
+                    ORIGINAL_WIDTH - x_anim_sprite_start - CARD_WIDTH,
+                    -y_anim_sprite + (CARD_HEIGHT + CARD_GAP) * i + ORIGINAL_HEIGHT, paint);
         }
     }
 
     private void drawHorizontalCardAnimation(Canvas canvas, Paint paint) {
         for (int i = 0; i < 6; ++i) {
             canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
-                    x_anim_sprite + (145 + CARD_GAP) * i - (145 + CARD_GAP) * 6,
+                    x_anim_sprite + (CARD_WIDTH + CARD_GAP) * i - (CARD_WIDTH + CARD_GAP) * 6,
                     y_anim_sprite_start, paint);
             canvas.drawBitmap(cardBitmaps[(showBlinkLabel) ? sixRandomCards[i] : sixRandomCards[i] + 17],
-                    -x_anim_sprite + (145 + CARD_GAP) * i + ORIGINAL_WIDTH,
-                    ORIGINAL_HEIGHT - y_anim_sprite_start - 200, paint);
+                    -x_anim_sprite + (CARD_WIDTH + CARD_GAP) * i + ORIGINAL_WIDTH,
+                    ORIGINAL_HEIGHT - y_anim_sprite_start - CARD_HEIGHT, paint);
         }
     }
 
@@ -539,7 +538,7 @@ public class SnoodsSurfaceView extends SurfaceView
         mOriginalScreenRect = new Rect(0, 0, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);
         mOutputScreenRect = new Rect(0, 0, mScreenWidth, mScreenHeight);
 
-        cardRect = new Rect(0, 0, cardBitmaps[0].getWidth(), cardBitmaps[0].getHeight());
+        Rect cardRect = new Rect(0, 0, cardBitmaps[0].getWidth(), cardBitmaps[0].getHeight());
         mX_card_grab_coord = cardRect.centerX();
         mY_card_grab_coord = cardRect.centerY() / 2;
 
@@ -569,8 +568,8 @@ public class SnoodsSurfaceView extends SurfaceView
                 !mIsDropingColumn &&
                 !mIsWinAnimation) {
             highlightColumn = column;
-            putCardToColumn(columnRects[column - 1].centerX() - 145 / 2,
-                    columnRects[column - 1].centerY() - 200 / 2);
+            putCardToColumn(columnRects[column - 1].centerX() - CARD_WIDTH / 2,
+                    columnRects[column - 1].centerY() - CARD_HEIGHT / 2);
         }
     }
 
@@ -845,7 +844,7 @@ public class SnoodsSurfaceView extends SurfaceView
                         showBlinkLabel = !showBlinkLabel;
                     }
                     x_anim_sprite += drop_column_speed;
-                    if (x_anim_sprite > ORIGINAL_WIDTH + 200 + (145 * 6) + CARD_GAP) {
+                    if (x_anim_sprite > ORIGINAL_WIDTH + CARD_HEIGHT + (CARD_WIDTH * 6) + CARD_GAP) {
                         mIsWinAnimation = false;
                         x_anim_sprite = 0;
                     }
@@ -856,7 +855,7 @@ public class SnoodsSurfaceView extends SurfaceView
                         showBlinkLabel = !showBlinkLabel;
                     }
                     y_anim_sprite += drop_column_speed;
-                    if (y_anim_sprite > ORIGINAL_HEIGHT + 200 + (200 * 6) + CARD_GAP) {
+                    if (y_anim_sprite > ORIGINAL_HEIGHT + CARD_HEIGHT + (CARD_HEIGHT * 6) + CARD_GAP) {
                         mIsWinAnimation = false;
                         y_anim_sprite = 0;
                     }
@@ -1021,7 +1020,7 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
-    // TODO: to new class ?
+    // TODO: move to new class ?
     private long m_lLastCallTime = 0L;
 
     public int getTimesPerSecond() {

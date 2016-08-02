@@ -19,7 +19,7 @@ public class SnoodsGameTimer extends CountDownTimer {
         this.snoodsSurfaceView = snoodsSurfaceView;
         this.snoodsGameActivity = snoodsGameActivity;
 
-        dec = 353.0f / (millisInFuture / 1000.0f);
+        dec = 353.0f / (millisInFuture / 1000.0f); // Hardcoded progress bar coordinates
     }
 
     @Override
