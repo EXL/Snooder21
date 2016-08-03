@@ -1,0 +1,13 @@
+Use following command:
+
+$ ffmpeg -i <sound_file> -c:a libvorbis -ar 44100 out.ogg
+
+For converting ogg file to default 44100 Hz frequency and suppress "AUDIO_OUTPUT_FLAG_FAST denied by client" warning.
+
+If the sound is quiet, you can use the volume filter:
+
+$ ffmpeg -i <sound_file> -c:a libvorbis -ar 44100 -af "volume=2.0" out.ogg
+
+To set the sound quality, use the "-aq" parameter and argument 0-10
+
+$ ffmpeg -i <sound_file> -c:a libvorbis -ar 44100 -aq 5 out.ogg

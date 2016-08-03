@@ -1,0 +1,31 @@
+1. sfx_game_over.ogg
+--------------------
+Author: sauer2 (Submitted by Anonymous)
+Download Link: http://opengameart.org/content/oldschool-win-and-die-jump-and-run-sounds
+License(s): CC0 1.0 Universal (CC0 1.0) Public Domain Dedication (https://creativecommons.org/publicdomain/zero/1.0/)
+
+2. sfx_game_win.ogg
+-------------------
+Author: InfiniteLifespan
+Download Link: https://www.freesound.org/people/InfiniteLifespan/sounds/266454/
+License(s): CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+
+3. sfx_drop.ogg
+4. sfx_grab.ogg
+5. sfx_error.ogg
+----------------
+Author: HaelDB
+Download Link: http://opengameart.org/content/card-game-sounds
+License(s): GPL 3.0 (https://www.gnu.org/licenses/gpl-3.0.html), GPL 2.0 (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+
+6. sfx_lock.ogg
+---------------
+Author: VincentM400
+Download Link: https://www.freesound.org/people/VincentM400/sounds/249616/
+License(s): CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+
+7. sfx_whoosh.ogg
+-----------------
+Author: DrMinky
+Download Link: https://www.freesound.org/people/DrMinky/sounds/174435/
+License(s): CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)

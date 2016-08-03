@@ -1,0 +1,20 @@
+1. bkg_moto.xcf
+2. card.xcf
+3. cover.xcf
+4. deck_moto.xcf
+5. text_moto_ru.xcf
+6. text_moto.xcf
+7. win_moto.xcf
+
+8. Motorola_C350_green.svg
+9. Snooders.svg
+
+10. cover.jpg
+11. icon_about_big.png
+
+12. bkg_moto.png
+13. deck_moto.png
+14. text_moto.png
+15. win_moto.jpg
+--------------------------
+License(s): CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
