@@ -475,6 +475,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 mMainPaint.setFilterBitmap(true);
             }
             canvas.drawBitmap(mGameBitmap, mOriginalScreenRect, mOutputScreenRect, mMainPaint);
+            mMainPaint.reset();
         }
     }
 
