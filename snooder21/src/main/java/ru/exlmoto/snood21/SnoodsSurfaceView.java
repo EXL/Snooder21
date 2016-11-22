@@ -32,8 +32,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.KeyEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -41,8 +40,8 @@ import java.util.Random;
 
 import ru.exlmoto.snood21.SnoodsLauncherActivity.SnoodsSettings;
 
-public class SnoodsSurfaceView extends SurfaceView
-        implements SurfaceHolder.Callback, Runnable {
+public class SnoodsSurfaceView extends View
+        implements Runnable {
 
     public static final int ORIGINAL_WIDTH = 800;
     public static final int ORIGINAL_HEIGHT = 480;
@@ -89,7 +88,7 @@ public class SnoodsSurfaceView extends SurfaceView
     private Bitmap mGameBitmap = null;
     private Canvas mBitmapCanvas = null;
 
-    private SurfaceHolder mSurfaceHolder = null;
+    // private SurfaceHolder mSurfaceHolder = null;
 
     private Bitmap mCurrentCardBitmap = null;
     private Bitmap mCurrentCardBitmapToDeck = null;
@@ -162,6 +161,8 @@ public class SnoodsSurfaceView extends SurfaceView
     private boolean mPlayingGameOverSound = true;
     private boolean mPlayingWhooshSound = true;
 
+    private boolean mFirstFrame = true;
+
     private SnoodsScoreManager snoodsScoreManager = null;
 
     public SnoodsSurfaceView(Context context, final SnoodsGameActivity snoodsGameActivity) {
@@ -174,8 +175,8 @@ public class SnoodsSurfaceView extends SurfaceView
         mGameBitmap = Bitmap.createBitmap(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, Bitmap.Config.ARGB_8888);
         mBitmapCanvas = new Canvas(mGameBitmap);
 
-        mSurfaceHolder = getHolder();
-        mSurfaceHolder.addCallback(this);
+        // mSurfaceHolder = getHolder();
+        // mSurfaceHolder.addCallback(this);
 
         mMainPaint = new Paint();
 
@@ -441,6 +442,9 @@ public class SnoodsSurfaceView extends SurfaceView
     private void render(Canvas canvas) {
         if (canvas != null) {
             if (!mIsWinAnimation) {
+
+                // SnoodsGameActivity.toDebug("HW Accel ?: " + canvas.isHardwareAccelerated());
+
                 // Draw background
                 mBitmapCanvas.drawBitmap(mBackGroundBitmap, 0, 0, mMainPaint);
 
@@ -993,6 +997,7 @@ public class SnoodsSurfaceView extends SurfaceView
         return mScreenHeight;
     }
 
+    /*
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         SnoodsGameActivity.toDebug("Surface created.");
@@ -1003,7 +1008,7 @@ public class SnoodsSurfaceView extends SurfaceView
 
         start();
     }
-
+    */
     private void clearColumns() {
         for (int i = 0; i < COLUMNS_COUNT; ++i) {
             columnsDecks[i].clear();
@@ -1013,6 +1018,7 @@ public class SnoodsSurfaceView extends SurfaceView
         }
     }
 
+    /*
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         SnoodsGameActivity.toDebug("Surface changed: " +
@@ -1038,11 +1044,30 @@ public class SnoodsSurfaceView extends SurfaceView
             }
         }
     }
+    */
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (mFirstFrame) {
+            SnoodsGameActivity.toDebug("Surface created.");
+            mScreenWidth = canvas.getWidth();
+            mScreenHeight = canvas.getHeight();
+
+            init();
+
+            start();
+
+            mFirstFrame = false;
+        }
+        render(canvas);
+        invalidate();
+        super.onDraw(canvas);
+    }
 
     @Override
     public void run() {
         while (mIsRunning) {
-            tick();
+            tick();/*
             try {
                 mMainCanvas = mSurfaceHolder.lockCanvas();
                 synchronized (mSurfaceHolder) {
@@ -1052,7 +1077,7 @@ public class SnoodsSurfaceView extends SurfaceView
                 if (mMainCanvas != null) {
                     mSurfaceHolder.unlockCanvasAndPost(mMainCanvas);
                 }
-            }
+            }*/
         }
     }
 
