@@ -1023,9 +1023,6 @@ public class SnoodsSurfaceView extends SurfaceView
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         SnoodsGameActivity.toDebug("Surface destroyed.");
-        mMainThread.interrupt();
-        resetGame(true);
-        clearColumns();
         boolean shutdown = false;
         mIsRunning = false;
         while (!shutdown) {
@@ -1038,6 +1035,8 @@ public class SnoodsSurfaceView extends SurfaceView
                 SnoodsGameActivity.toDebug("Error joining to Main Thread");
             }
         }
+        resetGame(true);
+        clearColumns();
     }
 
     @Override
