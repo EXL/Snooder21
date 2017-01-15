@@ -5,8 +5,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/layout_margin">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -36,15 +35,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="web|email"
+            android:layout_margin="@dimen/layout_margin"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/about_string"
             android:id="@+id/aboutTextView" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/ok"
-            android:layout_marginBottom="@dimen/layout_margin"
-            android:id="@+id/okAboutButton" />
     </LinearLayout>
 </ScrollView>

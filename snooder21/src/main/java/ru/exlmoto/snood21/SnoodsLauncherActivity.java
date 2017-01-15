@@ -25,7 +25,7 @@
 package ru.exlmoto.snood21;
 
 import android.app.Activity;
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,8 +33,10 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 //import android.widget.RadioButton;
@@ -84,8 +86,8 @@ public class SnoodsLauncherActivity extends Activity {
         };
     }
 
-    private Dialog aboutDialog = null;
-    private Dialog helpDialog = null;
+    private AlertDialog aboutDialog = null;
+    private AlertDialog helpDialog = null;
 
     private CheckBox vibrationCheckBox = null;
     private CheckBox soundCheckBox = null;
@@ -237,54 +239,26 @@ public class SnoodsLauncherActivity extends Activity {
         playerScoresView = (TextView) findViewById(R.id.player_Scores);
     }
 
-    private void showAboutDialog() {
-        this.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                aboutDialog.setContentView(R.layout.dialog_about);
-                aboutDialog.setCancelable(true);
-                aboutDialog.setTitle(R.string.app_name);
-
-                Button okAboutButton = (Button) aboutDialog.findViewById(R.id.okAboutButton);
-                okAboutButton.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        if (aboutDialog != null) {
-                            aboutDialog.cancel();
-                        }
-                    }
-                });
-
-                aboutDialog.show();
-            }
-        });
+    private void initAboutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_about, null);
+        builder.setView(dialogView);
+        builder.setTitle(R.string.app_name);
+        builder.setPositiveButton(R.string.ok, null);
+        aboutDialog = builder.create();
     }
 
-    private void showHelpDialog() {
-        this.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                helpDialog.setContentView(R.layout.dialog_help);
-                helpDialog.setCancelable(true);
-                helpDialog.setTitle(R.string.app_name);
-
-                Button okHelpButton = (Button) helpDialog.findViewById(R.id.okHelpButton);
-                okHelpButton.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        if (helpDialog != null) {
-                            helpDialog.cancel();
-                        }
-                    }
-                });
-
-                helpDialog.show();
-            }
-        });
+    private void initHelpDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_help, null);
+        builder.setView(dialogView);
+        builder.setTitle(R.string.app_name);
+        builder.setPositiveButton(R.string.ok, null);
+        helpDialog = builder.create();
     }
 
     public static void playSound(final int soundId) {
@@ -321,8 +295,8 @@ public class SnoodsLauncherActivity extends Activity {
             readSettings();
         }
 
-        aboutDialog = new Dialog(this);
-        helpDialog = new Dialog(this);
+        initAboutDialog();
+        initHelpDialog();
 
         initWidgets();
 
@@ -361,7 +335,7 @@ public class SnoodsLauncherActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                showAboutDialog();
+                showMyDialog(aboutDialog);
             }
         });
 
@@ -370,7 +344,7 @@ public class SnoodsLauncherActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                showHelpDialog();
+                showMyDialog(helpDialog);
             }
         });
 
@@ -393,12 +367,24 @@ public class SnoodsLauncherActivity extends Activity {
         });
     }
 
+    // Prevent dialog dismiss when orientation changes
+    // http://stackoverflow.com/a/27311231/2467443
+    private static void doKeepDialog(AlertDialog dialog) {
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.getWindow().setAttributes(lp);
+    }
+
+    private void showMyDialog(AlertDialog dialog) {
+        dialog.show();
+        doKeepDialog(dialog);
+    }
+
     @Override
     protected void onDestroy() {
         writeSettings();
-
-        aboutDialog.dismiss();
-        helpDialog.dismiss();
 
         super.onDestroy();
     }
