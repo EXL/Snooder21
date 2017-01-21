@@ -81,8 +81,8 @@ public class SnoodsLauncherActivity extends Activity {
                 "mono", "leave", "Pinkbyte", "Shaman007", "shell-script"
         };
         public static final int[] playerScores = {
-                85000, 70000, 60000, 55000, 50000,
-                45000, 40000, 35000, 30000, 25000
+                90000, 80000, 75000, 70000, 65000,
+                55000, 50000, 40000, 45000, 30000
         };
     }
 
