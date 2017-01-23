@@ -232,8 +232,8 @@ public class SnoodsLauncherActivity extends Activity {
         animationSpeedTextView = (TextView) findViewById(R.id.animationValueView);
         animationSpeedSeekBar = (SeekBar) findViewById(R.id.animationBar);
 
-//        motoRadioButton = (RadioButton) findViewById(R.id.motoThemeRadioButton);
-//        paperRadioButton = (RadioButton) findViewById(R.id.paperThemeRadioButton);
+        // motoRadioButton = (RadioButton) findViewById(R.id.motoThemeRadioButton);
+        // paperRadioButton = (RadioButton) findViewById(R.id.paperThemeRadioButton);
 
         playerNamesView = (TextView) findViewById(R.id.player_Names);
         playerScoresView = (TextView) findViewById(R.id.player_Scores);
@@ -241,7 +241,7 @@ public class SnoodsLauncherActivity extends Activity {
 
     private void initAboutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
+        // builder.setCancelable(false);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_about, null);
         builder.setView(dialogView);
@@ -252,7 +252,7 @@ public class SnoodsLauncherActivity extends Activity {
 
     private void initHelpDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
+        // builder.setCancelable(false);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_help, null);
         builder.setView(dialogView);
