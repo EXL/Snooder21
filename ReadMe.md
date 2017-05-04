@@ -30,19 +30,19 @@ git clone https://github.com/EXL/Snooder21 Snooder21Android
 
 ```sh
 cd ~/Deploy/Snooder21Android/
-ANDROID_HOME="/opt/android/android-sdk/" ./gradlew assembleDebug
+ANDROID_HOME="/opt/android-sdk/" ./gradlew assembleDebug
 ```
 
 * Install Snooder 21 APK-package on your Android device via adb;
 
 ```sh
 cd ~/Deploy/Snooder21Android/
-/opt/android/android-sdk-linux/platform-tools/adb install -r snooder21/build/outputs/apk/snooder21-debug.apk
+/opt/android-sdk/platform-tools/adb install -r snooder21/build/outputs/apk/snooder21-debug.apk
 ```
 
 * Run and enjoy!
 
-You can also import this project in your favorite IDE: Eclipse or Android Studio and build the APK-package by using these programs.
+You can also open this project in Android Studio IDE and build the APK-package by using this program.
 
 ## More information
 
