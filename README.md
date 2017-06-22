@@ -3,11 +3,11 @@ Snooder 21
 
 Snooder 21 is remake of very popular Motorola's standard card game: Snood™ 21 for Android OS.
 
-![Snooder 21 running on Motorola Droid 4 and Snood™ 21 running on Motorola C350](https://raw.github.com/EXL/Snooder21/master/images/Photo_Snooder_21_Motorola_D4_and_C350.jpg)
+![Snooder 21 running on Motorola Droid 4 and Snood™ 21 running on Motorola C350](images/Photo_Snooder_21_Motorola_D4_and_C350.jpg)
 
 Snooder 21 uses SurfaceView Canvas for drawing videocontext of the game. I added touch controls and some game engine improvements: launcher, drag and drop cards, sounds, etc.
 
-![Snooder 21 Android Screen](https://raw.github.com/EXL/Snooder21/master/images/Snooder21_android_screen.png)
+![Snooder 21 Android Screen](images/Snooder21_android_screen.png)
 
 ## Download
 
