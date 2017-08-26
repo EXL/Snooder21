@@ -82,7 +82,7 @@ public class SnoodsLauncherActivity extends Activity {
         };
         public static final int[] playerScores = {
                 90000, 80000, 75000, 70000, 65000,
-                55000, 50000, 40000, 45000, 30000
+                55000, 50000, 45000, 40000, 30000
         };
     }
 
