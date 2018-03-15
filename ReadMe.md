@@ -3,8 +3,7 @@ Snooder 21
 
 Snooder 21 is remake of very popular Motorola's standard card game: Snood™ 21 for Android OS.
 
-<a href="https://f-droid.org/packages/ru.exlmoto.snood21/" target="_blank" title="Get Snooder 21 on F-Droid">
-<img src="images/F-Droid_Get_it_on_Label.png" alt="Get Snooder 21 on F-Droid"/></a>
+[![Get Snooder 21 on F-Droid](images/F-Droid_Get_it_on_Label.png)](https://f-droid.org/packages/ru.exlmoto.snood21/)
 
 ![Snooder 21 running on Motorola Droid 4 and Snood™ 21 running on Motorola C350](images/Photo_Snooder_21_Motorola_D4_and_C350.jpg)
 
